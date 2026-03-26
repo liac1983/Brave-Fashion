@@ -1,0 +1,37 @@
+import ProductCard from "./product-card";
+
+type Product = {
+  id: string;
+  handle: string;
+  title: string;
+  featuredImage: {
+    url: string;
+    altText: string | null;
+  } | null;
+  priceRange: {
+    minVariantPrice: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
+};
+
+type ProductGridProps = {
+  products: Product[];
+};
+
+export default function ProductGrid({ products }: ProductGridProps) {
+  return (
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {products.map((product) => (
+        <ProductCard
+          key={product.id}
+          title={product.title}
+          handle={product.handle}
+          image={product.featuredImage}
+          price={`${product.priceRange.minVariantPrice.amount} ${product.priceRange.minVariantPrice.currencyCode}`}
+        />
+      ))}
+    </div>
+  );
+}
