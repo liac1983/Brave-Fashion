@@ -11,6 +11,9 @@ export default function CarrinhoPage() {
     subtotal,
     totalItems,
     clearCart,
+    checkoutUrl,
+    currencyCode,
+    isLoading,
   } = useCart();
 
   return (
@@ -29,71 +32,90 @@ export default function CarrinhoPage() {
       ) : (
         <div className="grid gap-10 lg:grid-cols-[1.8fr_1fr]">
           <div className="space-y-6">
-            {items.map((item) => (
-              <article
-                key={item.variantId}
-                className="flex gap-4 rounded-3xl border p-4"
-              >
-                <div className="relative h-28 w-24 overflow-hidden rounded-2xl bg-neutral-100">
-                  {item.image ? (
-                    <Image
-                      src={item.image.url}
-                      alt={item.image.altText || item.title}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : null}
-                </div>
+            {items.map((item) => {
+              const image =
+                item.merchandise.image ||
+                item.merchandise.product.featuredImage;
 
-                <div className="flex flex-1 flex-col justify-between">
-                  <div>
-                    <h2 className="text-lg font-medium">{item.title}</h2>
-                    <p className="mt-1 text-sm text-neutral-500">
-                      {item.variantTitle}
-                    </p>
-                    <p className="mt-2 text-sm text-neutral-700">
-                      {item.price} {item.currencyCode}
-                    </p>
+              return (
+                <article
+                  key={item.id}
+                  className="flex gap-4 rounded-3xl border p-4"
+                >
+                  <div className="relative h-28 w-24 overflow-hidden rounded-2xl bg-neutral-100">
+                    {image ? (
+                      <Image
+                        src={image.url}
+                        alt={image.altText || item.merchandise.product.title}
+                        fill
+                        sizes="96px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
+                        Sem imagem
+                      </div>
+                    )}
                   </div>
 
-                  <div className="mt-4 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateQuantity(item.variantId, item.quantity - 1)
-                        }
-                        className="h-9 w-9 rounded-full border"
-                      >
-                        -
-                      </button>
+                  <div className="flex flex-1 flex-col justify-between">
+                    <div>
+                      <h2 className="text-lg font-medium">
+                        {item.merchandise.product.title}
+                      </h2>
 
-                      <span className="min-w-6 text-center text-sm">
-                        {item.quantity}
-                      </span>
+                      <p className="mt-1 text-sm text-neutral-500">
+                        {item.merchandise.title}
+                      </p>
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateQuantity(item.variantId, item.quantity + 1)
-                        }
-                        className="h-9 w-9 rounded-full border"
-                      >
-                        +
-                      </button>
+                      <p className="mt-2 text-sm text-neutral-700">
+                        {item.merchandise.price.amount}{" "}
+                        {item.merchandise.price.currencyCode}
+                      </p>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => removeFromCart(item.variantId)}
-                      className="text-sm text-neutral-500 underline underline-offset-4"
-                    >
-                      Remover
-                    </button>
+                    <div className="mt-4 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateQuantity(item.id, item.quantity - 1)
+                          }
+                          disabled={isLoading}
+                          className="h-9 w-9 rounded-full border transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          -
+                        </button>
+
+                        <span className="min-w-6 text-center text-sm">
+                          {item.quantity}
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateQuantity(item.id, item.quantity + 1)
+                          }
+                          disabled={isLoading}
+                          className="h-9 w-9 rounded-full border transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => removeFromCart(item.id)}
+                        disabled={isLoading}
+                        className="text-sm text-neutral-500 underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Remover
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
 
           <aside className="h-fit rounded-3xl bg-neutral-50 p-6">
@@ -101,7 +123,9 @@ export default function CarrinhoPage() {
 
             <div className="mt-6 flex items-center justify-between text-sm">
               <span>Subtotal</span>
-              <span>{subtotal.toFixed(2)} EUR</span>
+              <span>
+                {subtotal.toFixed(2)} {currencyCode}
+              </span>
             </div>
 
             <p className="mt-4 text-sm text-neutral-500">
@@ -110,7 +134,13 @@ export default function CarrinhoPage() {
 
             <button
               type="button"
-              className="mt-6 w-full rounded-full bg-black px-6 py-3 text-sm text-white transition hover:opacity-90"
+              onClick={() => {
+                if (checkoutUrl) {
+                  window.location.href = checkoutUrl;
+                }
+              }}
+              disabled={!checkoutUrl || isLoading}
+              className="mt-6 w-full rounded-full bg-black px-6 py-3 text-sm text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Finalizar compra
             </button>
@@ -118,7 +148,8 @@ export default function CarrinhoPage() {
             <button
               type="button"
               onClick={clearCart}
-              className="mt-3 w-full rounded-full border border-neutral-300 px-6 py-3 text-sm transition hover:bg-white"
+              disabled={isLoading}
+              className="mt-3 w-full rounded-full border border-neutral-300 px-6 py-3 text-sm transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               Limpar carrinho
             </button>
@@ -128,4 +159,3 @@ export default function CarrinhoPage() {
     </section>
   );
 }
-

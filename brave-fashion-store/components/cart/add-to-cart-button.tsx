@@ -5,26 +5,19 @@ import { useCart } from "./cart-provider";
 
 type AddToCartButtonProps = {
   item: {
-    id: string;
     variantId: string;
-    handle: string;
-    title: string;
-    variantTitle: string;
-    price: string;
-    currencyCode: string;
-    image?: {
-      url: string;
-      altText: string | null;
-    } | null;
   };
 };
 
 export default function AddToCartButton({ item }: AddToCartButtonProps) {
-  const { addToCart } = useCart();
+  const { addToCart, isLoading } = useCart();
   const [added, setAdded] = useState(false);
 
-  const handleClick = () => {
-    addToCart(item);
+  const handleClick = async () => {
+    await addToCart({
+      variantId: item.variantId,
+      quantity: 1,
+    });
 
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
@@ -34,13 +27,10 @@ export default function AddToCartButton({ item }: AddToCartButtonProps) {
     <button
       type="button"
       onClick={handleClick}
-      className={`rounded-full px-6 py-3 text-sm text-white transition w-full
-        ${
-          added
-            ? "bg-green-600"
-            : "bg-black hover:opacity-90"
-        }
-      `}
+      disabled={isLoading}
+      className={`w-full rounded-full px-6 py-3 text-sm text-white transition ${
+        added ? "bg-green-600" : "bg-black hover:opacity-90"
+      } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
     >
       {added ? "✓ Adicionado" : "Adicionar ao carrinho"}
     </button>

@@ -77,4 +77,98 @@ export type CollectionByHandleQueryResponse = {
 };
 
 
+export type CartLine = {
+  id: string;
+  quantity: number;
+  merchandise: {
+    id: string;
+    title: string;
+    price: Money;
+    image?: ShopifyImage | null;
+    product: {
+      id: string;
+      handle: string;
+      title: string;
+      featuredImage?: ShopifyImage | null;
+    };
+  };
+};
+
+export type Cart = {
+  id: string;
+  checkoutUrl: string;
+  totalQuantity: number;
+  cost: {
+    subtotalAmount: Money;
+    totalAmount: Money;
+  };
+  lines: {
+    edges: Array<{
+      node: CartLine;
+    }>;
+  };
+};
+
+export type CartQueryResponse = {
+  cart: Cart | null;
+};
+
+export type CartCreateResponse = {
+  cartCreate: {
+    cart: Cart | null;
+    userErrors: Array<{
+      field?: string[];
+      message: string;
+    }>;
+    warnings?: Array<{
+      code?: string;
+      message: string;
+    }>;
+  };
+};
+
+export type CartLinesAddResponse = {
+  cartLinesAdd: {
+    cart: Cart | null;
+    userErrors: Array<{
+      field?: string[];
+      message: string;
+    }>;
+    warnings?: Array<{
+      code?: string;
+      message: string;
+    }>;
+  };
+};
+
+export type CartLinesUpdateResponse = {
+  cartLinesUpdate: {
+    cart: Cart | null;
+    userErrors: Array<{
+      field?: string[];
+      message: string;
+    }>;
+    warnings?: Array<{
+      code?: string;
+      message: string;
+    }>;
+  };
+};
+
+export type CartLinesRemoveResponse = {
+  cartLinesRemove: {
+    cart: Cart | null;
+    userErrors: Array<{
+      field?: string[];
+      message: string;
+    }>;
+    warnings?: Array<{
+      code?: string;
+      message: string;
+    }>;
+  };
+};
+
+
+
 
