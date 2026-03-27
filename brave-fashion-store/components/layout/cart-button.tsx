@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCart } from "@/components/cart/cart-provider";
+import { ShoppingBag } from "lucide-react";
 
 export default function CartButton() {
   const { totalItems } = useCart();
@@ -9,14 +10,16 @@ export default function CartButton() {
   return (
     <Link
       href="/carrinho"
-      className="flex items-center gap-2 rounded-full border px-3 py-2 text-sm hover:bg-black hover:text-white transition"
+      className="relative flex items-center justify-center text-neutral-800 transition hover:opacity-70"
+      aria-label="Carrinho"
     >
-      <span>🛒</span>
-      <span className="hidden md:inline">Carrinho</span>
-      <span className="rounded-full bg-black px-2 py-0.5 text-xs text-white">
-        {totalItems}
-      </span>
+      <ShoppingBag className="h-6 w-6" strokeWidth={1.5} />
+
+      {totalItems > 0 && (
+        <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-black px-1 text-xs text-white">
+          {totalItems}
+        </span>
+      )}
     </Link>
   );
 }
-
