@@ -9,12 +9,12 @@ const links = [
 
 export default function MainNav() {
   return (
-    <nav className="hidden items-center gap-6 md:flex">
+    <nav className="flex items-center gap-6">
       {links.map((link) => (
         <Link
           key={link.href}
           href={link.href}
-          className="text-sm font-medium text-neutral-700 hover:text-black transition"
+          className="text-sm font-medium text-neutral-700 transition hover:text-black"
         >
           {link.label}
         </Link>

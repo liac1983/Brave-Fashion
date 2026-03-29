@@ -19,9 +19,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-white text-black">
         <CartProvider>
           <Header />
-          <main className="mx-auto min-h-[70vh] max-w-7xl px-4 py-8">
-            {children}
-          </main>
+          <main>{children}</main>
           <Footer />
         </CartProvider>
       </body>
