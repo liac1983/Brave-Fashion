@@ -1,14 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getCollections, getProducts } from "@/lib/shopify";
+import { getProducts } from "@/lib/shopify";
 
 export default async function HomePage() {
-  const collections = await getCollections(6);
   const products = await getProducts(4);
-
-  const featuredCollections = collections
-    .filter((collection) => collection.handle !== "pagina-inicial")
-    .slice(0, 3);
 
   return (
     <>
@@ -48,159 +43,94 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl space-y-20 px-4 pb-20 pt-20">
-        <section>
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold">Categorias em destaque</h2>
-            <p className="mt-2 text-neutral-600">
-              Descobre algumas das áreas principais da coleção.
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {featuredCollections.map((collection) => (
-              <Link
-                key={collection.id}
-                href={`/colecao/${collection.handle}`}
-                className="rounded-3xl bg-neutral-100 p-8 transition hover:bg-neutral-200"
-              >
-                <h3 className="text-xl font-medium">{collection.title}</h3>
-                {collection.description ? (
-                  <p className="mt-2 text-sm text-neutral-600">
-                    {collection.description}
-                  </p>
-                ) : null}
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <section>
-          <div className="mb-8 flex items-end justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-semibold">Novidades</h2>
-              <p className="mt-2 text-neutral-600">
-                Algumas das peças mais recentes da loja.
+      <div className="bg-[#f7f2ec]">
+        <div className="mx-auto max-w-7xl space-y-20 px-4 pb-20 pt-20">
+          <section>
+            <div className="pb-16 text-center md:pb-20">
+              <h2 className="font-serif text-4xl font-medium tracking-tight text-neutral-900 md:text-6xl">
+                Produtos em Destaque
+              </h2>
+              <p className="mx-auto mt-4 max-w-3xl text-lg text-neutral-500 md:text-2xl">
+                Seleção especial das nossas peças mais icónicas da temporada
               </p>
             </div>
 
-            <Link
-              href="/produtos"
-              className="text-sm underline underline-offset-4"
-            >
-              Ver todos
-            </Link>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {products.map((product) => (
-              <Link
-                key={product.id}
-                href={`/produtos/${product.handle}`}
-                className="block"
-              >
-                <div className="aspect-[3/4] overflow-hidden rounded-3xl bg-neutral-100">
-                  {product.featuredImage ? (
-                    <div className="relative h-full w-full">
+            <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {products.map((product) => (
+                <Link
+                  key={product.id}
+                  href={`/produtos/${product.handle}`}
+                  className="group block"
+                >
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-white">
+                    {product.featuredImage ? (
                       <Image
                         src={product.featuredImage.url}
                         alt={product.featuredImage.altText || product.title}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                        className="object-cover"
+                        className="object-cover transition duration-500 group-hover:scale-105"
                       />
-                    </div>
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-neutral-400">
-                      Sem imagem
-                    </div>
-                  )}
-                </div>
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-neutral-400">
+                        Sem imagem
+                      </div>
+                    )}
+                  </div>
 
-                <div className="mt-4">
-                  <h3 className="text-base font-medium">{product.title}</h3>
-                  <p className="mt-1 text-sm text-neutral-500">
-                    {product.priceRange.minVariantPrice.amount}{" "}
-                    {product.priceRange.minVariantPrice.currencyCode}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <section className="grid gap-8 md:grid-cols-2 md:items-center">
-          <div className="overflow-hidden rounded-3xl bg-neutral-100">
-            <div className="flex min-h-[420px] items-center justify-center text-neutral-400">
-              Imagem look completo
+                  <div className="mt-5">
+                    <h3 className="font-serif text-2xl text-neutral-900">
+                      {product.title}
+                    </h3>
+                    <p className="mt-3 text-2xl text-neutral-500">
+                      €{Number(product.priceRange.minVariantPrice.amount).toFixed(2)}
+                    </p>
+                  </div>
+                </Link>
+              ))}
             </div>
-          </div>
 
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-neutral-500">
-              Looks completos
-            </p>
-            <h2 className="mt-4 text-3xl font-semibold">
-              Conjuntos pensados ao detalhe
-            </h2>
-            <p className="mt-4 max-w-xl text-neutral-600">
-              Descobre combinações elegantes e femininas para o dia a dia ou para
-              momentos especiais, sempre com atenção ao corte, ao caimento e ao
-              detalhe.
-            </p>
-
-            <Link
-              href="/colecoes"
-              className="mt-6 inline-block rounded-full bg-black px-6 py-3 text-sm text-white"
-            >
-              Explorar looks
-            </Link>
-          </div>
-        </section>
-
-        <section>
-          <div className="rounded-3xl bg-neutral-50 px-6 py-12 md:px-10">
-            <p className="text-sm uppercase tracking-[0.3em] text-neutral-500">
-              Arranjos
-            </p>
-
-            <h2 className="mt-4 text-3xl font-semibold">
-              Ajustes e arranjos para um resultado perfeito
-            </h2>
-
-            <p className="mt-4 max-w-2xl text-neutral-600">
-              Porque a diferença está nos pormenores, disponibilizamos apoio em
-              arranjos e ajustes para que cada peça assente da melhor forma.
-            </p>
-
-            <div className="mt-8">
+            <div className="mt-16 flex justify-center">
               <Link
-                href="/contactos"
-                className="rounded-full border border-neutral-300 px-6 py-3 text-sm transition hover:bg-white"
+                href="/produtos"
+                className="flex items-center justify-center gap-4 text-[18px] font-medium no-underline"
+                style={{
+                  minWidth: "360px",
+                  border: "2px solid #B76E2B",
+                  color: "#B76E2B",
+                  padding: "20px 48px",
+                }}
               >
-                Marcar arranjo
+                <span className="font-serif">Ver Todos os Produtos</span>
+                <span
+                  aria-hidden="true"
+                  style={{ fontSize: "24px", lineHeight: 1 }}
+                >
+                  →
+                </span>
               </Link>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section>
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold">Segue a Brave Fashion</h2>
-            <p className="mt-2 text-neutral-600">
-              Inspiração, novidades e looks no Instagram.
-            </p>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {[1, 2, 3, 4].map((item) => (
-              <div
-                key={item}
-                className="aspect-square rounded-3xl bg-neutral-100"
-              />
-            ))}
-          </div>
-        </section>
+          <section>
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold">Segue a Brave Fashion</h2>
+              <p className="mt-2 text-neutral-600">
+                Inspiração, novidades e looks no Instagram.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              {[1, 2, 3, 4].map((item) => (
+                <div
+                  key={item}
+                  className="aspect-square rounded-3xl bg-white"
+                />
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
     </>
   );
