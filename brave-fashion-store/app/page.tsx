@@ -1,9 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getProducts } from "@/lib/shopify";
+import { getCollections, getProducts } from "@/lib/shopify";
 
 export default async function HomePage() {
   const products = await getProducts(4);
+  const collections = await getCollections(6);
+
+  const featuredCollections = collections
+    .filter((collection) => collection.handle !== "pagina-inicial")
+    .slice(0, 3);
 
   return (
     <>
@@ -44,9 +49,9 @@ export default async function HomePage() {
       </section>
 
       <div className="bg-[#f7f2ec]">
-        <div className="mx-auto max-w-7xl space-y-20 px-4 pb-20 pt-20">
+        <div className="mx-auto max-w-7xl space-y-24 px-4 pb-24 pt-20">
           <section>
-            <div className="pb-16 text-center md:pb-20">
+            <div className="text-center pb-20">
               <h2 className="font-serif text-4xl font-medium tracking-tight text-neutral-900 md:text-6xl">
                 Produtos em Destaque
               </h2>
@@ -113,8 +118,65 @@ export default async function HomePage() {
           </section>
 
 
+          <section className="mt-20 bg-[#f3ece7] py-16">
+
+            <div className="mb-20 text-center">
+              <h2 className="font-serif text-4xl font-medium tracking-tight text-neutral-900 md:text-6xl">
+                Categorias
+              </h2>
+            </div>
+
+            <div className="mt-20 grid gap-8 md:grid-cols-3"> 
+
+              {featuredCollections.map((collection) => (
+                <Link
+                  key={collection.id}
+                  href={`/colecao/${collection.handle}`}
+                  className="group block"
+                >
+                  <div
+                    className="relative overflow-hidden rounded-[6px] bg-[#d9cec2]"
+                    style={{ height: "420px", minHeight: "420px" }}
+                  >
+                    {collection.image ? (
+                      <Image
+                        src={collection.image.url}
+                        alt={collection.image.altText || collection.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover transition duration-700 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-neutral-500">
+                        Sem imagem
+                      </div>
+                    )}
+
+                  <div
+                    className="absolute inset-0 z-10 transition duration-500"
+                    style={{ backgroundColor: "rgba(166, 90, 42, 0.28)" }}
+                  />
+
+                  <div className="absolute inset-0 z-20 flex items-center justify-center px-6 text-center">
+                    <h3
+                      className="font-serif text-4xl text-white md:text-5xl"
+                      style={{ textShadow: "0 2px 10px rgba(0,0,0,0.18)" }}
+                    >
+                      {collection.title}
+                    </h3>
+                  </div>
+
+                  </div>
+
+
+                </Link>
+              ))}
+            </div>
+          </section>
+
+
           <section>
-            <div className="mb-8">
+            <div className="mb-8 mt-20">
               <h2 className="text-2xl font-semibold">Segue a Brave Fashion</h2>
               <p className="mt-2 text-neutral-600">
                 Inspiração, novidades e looks no Instagram.
