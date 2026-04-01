@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import AddToCartButton from "@/components/cart/add-to-cart-button";
 
 type Variant = {
@@ -50,14 +51,21 @@ export default function VariantSelector({
   };
 
   return (
-    <div className="space-y-6">
-      {selectedVariant && (
-        <p className="text-2xl font-semibold text-neutral-900">
-          {selectedVariant.price.amount} {selectedVariant.price.currencyCode}
-        </p>
-      )}
+    <div className="space-y-8">
+      <div className="mb-10 flex items-center justify-between gap-6">
+        <h2 className="font-serif text-2xl text-neutral-900 md:text-3xl">
+          Selecione o seu tamanho
+        </h2>
 
-      <div className="flex flex-wrap gap-3">
+        <Link
+          href="/guia-de-tamanhos"
+          className="text-xl font-medium text-neutral-500 underline underline-offset-4 transition hover:text-neutral-900"
+        >
+          Guia de tamanhos
+        </Link>
+      </div>
+
+      <div className="flex flex-wrap gap-4">
         {variants.map((variant) => {
           const isSelected = selectedVariant?.id === variant.id;
 
@@ -67,10 +75,10 @@ export default function VariantSelector({
               type="button"
               onClick={() => handleSelect(variant)}
               disabled={!variant.availableForSale}
-              className={`min-w-[64px] rounded-full border px-6 py-3 text-center text-sm font-medium transition ${
+              className={`flex h-[72px] min-w-[92px] items-center justify-center rounded-[6px] border text-2xl font-medium transition ${
                 isSelected
-                  ? "border-black bg-black text-white shadow-sm"
-                  : "border-neutral-300 hover:bg-neutral-100"
+                  ? "border-[#B76E2B] bg-[#B76E2B] text-white"
+                  : "border-[#eadccf] bg-transparent text-neutral-900 hover:border-[#B76E2B]"
               } ${
                 !variant.availableForSale ? "cursor-not-allowed opacity-40" : ""
               }`}
@@ -82,22 +90,25 @@ export default function VariantSelector({
       </div>
 
       {selectedVariant && selectedVariant.availableForSale ? (
-        <AddToCartButton
-          item={{
-            id: product.id,
-            variantId: selectedVariant.id,
-            handle: product.handle,
-            title: product.title,
-            variantTitle: selectedVariant.title,
-            price: selectedVariant.price.amount,
-            currencyCode: selectedVariant.price.currencyCode,
-            image: selectedVariant.image || product.featuredImage,
-          }}
-        />
+        <div className="pt-2">
+          <AddToCartButton
+            item={{
+              id: product.id,
+              variantId: selectedVariant.id,
+              handle: product.handle,
+              title: product.title,
+              variantTitle: selectedVariant.title,
+              price: selectedVariant.price.amount,
+              currencyCode: selectedVariant.price.currencyCode,
+              image: selectedVariant.image || product.featuredImage,
+            }}
+            className="w-full rounded-[6px] bg-[#B76E2B] px-6 py-5 text-2xl font-medium text-white transition hover:bg-[#a86424]"
+          />
+        </div>
       ) : (
         <button
           disabled
-          className="rounded-full bg-neutral-300 px-6 py-3 text-sm text-white"
+          className="w-full rounded-[6px] bg-neutral-300 px-6 py-5 text-2xl font-medium text-white"
         >
           Indisponível
         </button>

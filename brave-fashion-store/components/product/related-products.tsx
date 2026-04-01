@@ -13,9 +13,12 @@ export default function RelatedProducts({
   if (products.length === 0) return null;
 
   return (
-    <section className="mt-20">
-      <h2 className="text-2xl font-semibold">{title}</h2>
-      <div className="mt-8">
+    <section className="mt-28">
+      <h2 className="font-serif text-4xl text-neutral-900 md:text-6xl">
+        {title}
+      </h2>
+
+      <div className="mt-12">
         <ProductGrid products={products} />
       </div>
     </section>

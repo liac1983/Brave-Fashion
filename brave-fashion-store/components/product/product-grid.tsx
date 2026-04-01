@@ -22,16 +22,19 @@ type ProductGridProps = {
 
 export default function ProductGrid({ products }: ProductGridProps) {
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
       {products.map((product) => (
         <ProductCard
           key={product.id}
           title={product.title}
           handle={product.handle}
           image={product.featuredImage}
-          price={`${product.priceRange.minVariantPrice.amount} ${product.priceRange.minVariantPrice.currencyCode}`}
+          price={`€${Number(product.priceRange.minVariantPrice.amount).toFixed(
+            2
+          )}`}
         />
       ))}
     </div>
   );
 }
+

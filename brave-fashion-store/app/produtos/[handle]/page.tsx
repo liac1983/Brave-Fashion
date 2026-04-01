@@ -1,6 +1,9 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProductByHandle } from "@/lib/shopify";
+import { ArrowLeft } from "lucide-react";
+import { getProductByHandle, getProducts } from "@/lib/shopify";
 import ProductDetails from "@/components/product/product-details";
+import RelatedProducts from "@/components/product/related-products";
 
 type ProductPageProps = {
   params: Promise<{
@@ -18,17 +21,30 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const variants = product.variants?.edges.map((edge) => edge.node) ?? [];
 
-  return (
-    <section className="py-12">
-      <ProductDetails product={product} variants={variants} />
+  const allProducts = await getProducts(8);
+  const relatedProducts = allProducts
+    .filter((item) => item.handle !== product.handle)
+    .slice(0, 3);
 
-      <section className="mt-20">
-        <h2 className="text-2xl font-semibold">Combina com</h2>
-        <p className="mt-3 text-neutral-600">
-          Em breve vais poder ver sugestões de peças no mesmo padrão e looks
-          completos para combinar com este artigo.
-        </p>
-      </section>
+  return (
+    <section className="bg-[#f7f2ec] py-10 md:py-14">
+      <div className="mx-auto max-w-7xl px-4">
+        <Link
+          href="/produtos"
+          className="mb-10 inline-flex items-center gap-3 text-lg text-neutral-500 transition hover:text-neutral-900"
+        >
+          <ArrowLeft size={22} />
+          <span>Voltar à loja</span>
+        </Link>
+
+        <ProductDetails product={product} variants={variants} />
+
+        <RelatedProducts
+          title="Também pode gostar"
+          products={relatedProducts}
+        />
+      </div>
     </section>
   );
 }
+

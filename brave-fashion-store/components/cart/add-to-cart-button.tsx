@@ -7,9 +7,13 @@ type AddToCartButtonProps = {
   item: {
     variantId: string;
   };
+  className?: string;
 };
 
-export default function AddToCartButton({ item }: AddToCartButtonProps) {
+export default function AddToCartButton({
+  item,
+  className = "",
+}: AddToCartButtonProps) {
   const { addToCart, isLoading } = useCart();
   const [added, setAdded] = useState(false);
 
@@ -23,14 +27,18 @@ export default function AddToCartButton({ item }: AddToCartButtonProps) {
     setTimeout(() => setAdded(false), 1500);
   };
 
+  const defaultClassName =
+    "w-full rounded-full px-6 py-3 text-sm font-medium text-white transition";
+
   return (
     <button
       type="button"
       onClick={handleClick}
       disabled={isLoading}
-      className={`w-full rounded-full px-6 py-3 text-sm text-white transition ${
-        added ? "bg-green-600" : "bg-black hover:opacity-90"
-      } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+      className={`${defaultClassName} ${
+        className ||
+        `${added ? "bg-green-600" : "bg-black hover:opacity-90"}`
+      } ${isLoading ? "cursor-not-allowed opacity-60" : ""}`}
     >
       {added ? "✓ Adicionado" : "Adicionar ao carrinho"}
     </button>
