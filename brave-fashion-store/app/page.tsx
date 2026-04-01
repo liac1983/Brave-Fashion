@@ -122,7 +122,7 @@ export default async function HomePage() {
 
             <div className="mb-20 text-center">
               <h2 className="font-serif text-4xl font-medium tracking-tight text-neutral-900 md:text-6xl">
-                Categorias
+                Coleções
               </h2>
             </div>
 

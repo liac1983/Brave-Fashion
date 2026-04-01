@@ -38,11 +38,11 @@ export default function ProductCard({
               src={image.url}
               alt={image.altText || title}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
               className="object-cover transition duration-500 group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm text-neutral-400">
+            <div className="flex h-full w-full items-center justify-center text-neutral-400">
               Sem imagem
             </div>
           )}
