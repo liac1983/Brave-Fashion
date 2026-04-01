@@ -33,23 +33,18 @@ export default function Footer() {
 
             <ul className="space-y-4 text-[16px] text-neutral-500 md:text-[18px]">
               <li>
-                <Link href="/colecao/vestidos" className="transition hover:text-neutral-900">
-                  Vestidos
+                <Link href="/colecao/novidades" className="transition hover:text-neutral-900">
+                  Novidades
                 </Link>
               </li>
               <li>
-                <Link href="/colecao/casacos" className="transition hover:text-neutral-900">
-                  Casacos
+                <Link href="/colecao/casual" className="transition hover:text-neutral-900">
+                  Casual
                 </Link>
               </li>
               <li>
-                <Link href="/colecao/conjuntos" className="transition hover:text-neutral-900">
-                  Conjuntos
-                </Link>
-              </li>
-              <li>
-                <Link href="/colecoes" className="transition hover:text-neutral-900">
-                  Novas Coleções
+                <Link href="/colecao/chic" className="transition hover:text-neutral-900">
+                  Chic
                 </Link>
               </li>
             </ul>
@@ -70,11 +65,6 @@ export default function Footer() {
               <li>
                 <Link href="/envios" className="transition hover:text-neutral-900">
                   Envios e Devoluções
-                </Link>
-              </li>
-              <li>
-                <Link href="/guia-de-tamanhos" className="transition hover:text-neutral-900">
-                  Guia de Tamanhos
                 </Link>
               </li>
               <li>

@@ -57,12 +57,7 @@ export default function VariantSelector({
           Selecione o seu tamanho
         </h2>
 
-        <Link
-          href="/guia-de-tamanhos"
-          className="text-xl font-medium text-neutral-500 underline underline-offset-4 transition hover:text-neutral-900"
-        >
-          Guia de tamanhos
-        </Link>
+
       </div>
 
       <div className="flex flex-wrap gap-4">
