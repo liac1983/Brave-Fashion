@@ -19,6 +19,20 @@ export const PRODUCTS_QUERY = /* GraphQL */ `
               currencyCode
             }
           }
+          variants(first: 1) {
+            edges {
+              node {
+                price {
+                  amount
+                  currencyCode
+                }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -128,6 +142,20 @@ export const COLLECTION_BY_HANDLE_QUERY = /* GraphQL */ `
               minVariantPrice {
                 amount
                 currencyCode
+              }
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  price {
+                    amount
+                    currencyCode
+                  }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
+                }
               }
             }
           }

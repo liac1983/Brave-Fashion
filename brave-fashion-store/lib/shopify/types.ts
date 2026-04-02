@@ -16,6 +16,7 @@ export type ProductVariant = {
   availableForSale: boolean;
   image?: ShopifyImage | null;
   price: Money;
+  compareAtPrice?: Money | null;
 };
 
 export type Product = {
@@ -75,7 +76,6 @@ export type CollectionsQueryResponse = {
 export type CollectionByHandleQueryResponse = {
   collection: Collection | null;
 };
-
 
 export type CartLine = {
   id: string;
@@ -168,7 +168,4 @@ export type CartLinesRemoveResponse = {
     }>;
   };
 };
-
-
-
 

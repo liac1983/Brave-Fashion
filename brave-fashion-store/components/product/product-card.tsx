@@ -5,6 +5,8 @@ type ProductCardProps = {
   title: string;
   handle: string;
   price: string;
+  compareAtPrice?: string;
+  badge?: string;
   image?: {
     url: string;
     altText: string | null;
@@ -17,6 +19,8 @@ function getCategoryFromTitle(title: string) {
   if (lower.includes("vestido")) return "Vestidos";
   if (lower.includes("casaco")) return "Casacos";
   if (lower.includes("conjunto")) return "Conjuntos";
+  if (lower.includes("saia")) return "Saias";
+  if (lower.includes("calça") || lower.includes("calcas") || lower.includes("calças")) return "Calças";
 
   return "Brave Fashion";
 }
@@ -25,6 +29,8 @@ export default function ProductCard({
   title,
   handle,
   price,
+  compareAtPrice,
+  badge,
   image,
 }: ProductCardProps) {
   const category = getCategoryFromTitle(title);
@@ -47,7 +53,6 @@ export default function ProductCard({
             </div>
           )}
 
-          
         </div>
       </Link>
 
@@ -58,7 +63,15 @@ export default function ProductCard({
           </h3>
         </Link>
 
-        <p className="mt-3 text-[22px] text-neutral-500">{price}</p>
+        <div className="mt-3 flex items-center gap-3">
+          <p className="text-[22px] text-neutral-900">{price}</p>
+
+          {compareAtPrice ? (
+            <p className="text-[18px] text-neutral-400 line-through">
+              {compareAtPrice}
+            </p>
+          ) : null}
+        </div>
       </div>
     </article>
   );
