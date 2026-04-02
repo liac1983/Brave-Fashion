@@ -3,7 +3,6 @@ import Link from "next/link";
 const links = [
   { href: "/", label: "Início" },
   { href: "/produtos", label: "Produtos" },
-  { href: "/contactos", label: "Contactos" },
 ];
 
 export default function MainNav() {

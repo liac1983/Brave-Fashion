@@ -57,11 +57,7 @@ export default function Footer() {
             </h3>
 
             <ul className="space-y-4 text-[16px] text-neutral-500 md:text-[18px]">
-              <li>
-                <Link href="/contactos" className="transition hover:text-neutral-900">
-                  Contacto
-                </Link>
-              </li>
+            
               <li>
                 <Link href="/envios" className="transition hover:text-neutral-900">
                   Envios e Devoluções
@@ -132,6 +128,15 @@ export default function Footer() {
               </a>
 
             </div>
+          </div>
+          <div>
+            <p className="max-w-[320px] text-[16px] leading-relaxed text-neutral-500 md:text-[18px]">
+                918699920
+              </p>
+
+              <p className="max-w-[320px] text-[16px] leading-relaxed text-neutral-500 md:text-[18px]">
+                Rua D.João IV nº23 R/CH 4590-578 Paços de Ferreira
+              </p>
           </div>
         </div>
 
