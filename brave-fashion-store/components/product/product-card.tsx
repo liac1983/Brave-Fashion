@@ -20,7 +20,12 @@ function getCategoryFromTitle(title: string) {
   if (lower.includes("casaco")) return "Casacos";
   if (lower.includes("conjunto")) return "Conjuntos";
   if (lower.includes("saia")) return "Saias";
-  if (lower.includes("calça") || lower.includes("calcas") || lower.includes("calças")) return "Calças";
+  if (
+    lower.includes("calça") ||
+    lower.includes("calcas") ||
+    lower.includes("calças")
+  )
+    return "Calças";
 
   return "Brave Fashion";
 }
@@ -53,6 +58,15 @@ export default function ProductCard({
             </div>
           )}
 
+          <div
+            className={`absolute left-5 top-5 rounded-[6px] px-4 py-2 text-lg ${
+              badge
+                ? "bg-[#B76E2B] text-white"
+                : "bg-[#f7f2ec] text-neutral-700"
+            }`}
+          >
+            {badge}
+          </div>
         </div>
       </Link>
 

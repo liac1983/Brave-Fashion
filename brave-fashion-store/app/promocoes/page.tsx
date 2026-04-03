@@ -1,6 +1,12 @@
 import ProductCard from "@/components/product/product-card";
 import { getProducts } from "@/lib/shopify";
 
+function getDiscountPercentage(price: number, compareAtPrice: number) {
+  if (compareAtPrice <= price) return null;
+
+  return Math.round(((compareAtPrice - price) / compareAtPrice) * 100);
+}
+
 export default async function PromocoesPage() {
   const products = await getProducts(24);
 
@@ -32,19 +38,31 @@ export default async function PromocoesPage() {
             {discountedProducts.map((product) => {
               const firstVariant = product.variants?.edges?.[0]?.node;
 
+              const price = Number(firstVariant?.price.amount || 0);
+              const compareAtPrice = Number(
+                firstVariant?.compareAtPrice?.amount || 0
+              );
+
+              const discountPercentage = getDiscountPercentage(
+                price,
+                compareAtPrice
+              );
+
               return (
                 <ProductCard
                   key={product.id}
                   title={product.title}
                   handle={product.handle}
                   image={product.featuredImage}
-                  price={`€${Number(firstVariant?.price.amount || 0).toFixed(2)}`}
+                  price={`€${price.toFixed(2)}`}
                   compareAtPrice={
                     firstVariant?.compareAtPrice
-                      ? `€${Number(firstVariant.compareAtPrice.amount).toFixed(2)}`
+                      ? `€${compareAtPrice.toFixed(2)}`
                       : undefined
                   }
-                  badge="Promoção"
+                  badge={
+                    discountPercentage ? `-${discountPercentage}%` : "Promoção"
+                  }
                 />
               );
             })}
