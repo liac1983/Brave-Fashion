@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getCollections, getProducts } from "@/lib/shopify";
+import NewsletterForm from "@/components/newsletter-form";
 
 export default async function HomePage() {
   const products = await getProducts(4);
@@ -192,6 +193,25 @@ export default async function HomePage() {
               ))}
             </div>
           </section>
+
+          <section className="bg-[#f7f2ec] py-20">
+            <div className="mx-auto max-w-4xl px-4 text-center">
+              <h2 className="font-serif text-4xl text-neutral-900 md:text-6xl">
+                Fique a Par
+              </h2>
+
+              <p className="mx-auto mt-6 max-w-3xl text-lg text-neutral-500 md:text-2xl">
+                Subscreva para receber novidades sobre as nossas coleções e ofertas exclusivas.
+              </p>
+
+              <NewsletterForm />
+
+              <p className="mt-4 text-sm text-neutral-500">
+                Receba 10% de desconto na primeira compra ao subscrever a newsletter.
+              </p>
+            </div>
+          </section>
+
         </div>
       </div>
     </>
