@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getCollections, getProducts } from "@/lib/shopify";
 import NewsletterForm from "@/components/newsletter-form";
+import HeroSection from "@/components/home/hero-section";
 
 export default async function HomePage() {
   const products = await getProducts(4);
@@ -13,41 +14,8 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative h-screen w-full overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src="/hero.jpg"
-            alt="Nova coleção Brave Fashion"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-[center_25%]"
-          />
-          <div className="absolute inset-0 bg-black/20" />
-        </div>
 
-        <div className="relative z-10 flex h-full items-center justify-center px-6 text-center">
-          <div className="max-w-4xl">
-            <h1 className="font-serif text-5xl font-medium tracking-tight text-white md:text-7xl">
-              Nova Coleção
-            </h1>
-
-            <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-white md:text-2xl">
-              O estilo é criar a própria moda — a diferença está nos pormenores.
-            </p>
-
-            <div className="mt-10">
-              <Link
-                href="/produtos"
-                className="inline-flex items-center gap-3 bg-[#B9712C] px-8 py-4 text-base font-medium text-white transition hover:bg-[#a86424]"
-              >
-                Explorar Loja
-                <span aria-hidden="true">→</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       <div className="bg-[#f7f2ec]">
         <div className="mx-auto max-w-7xl space-y-24 px-4 pb-24 pt-20">
