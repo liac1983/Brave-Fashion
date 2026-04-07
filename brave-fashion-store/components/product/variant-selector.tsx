@@ -28,8 +28,8 @@ type VariantSelectorProps = {
     featuredImage?: {
       url: string;
       altText: string | null;
-      width?: number | null;
-      height?: number | null;
+      width: number | null;
+      height: number | null;
     } | null;
   };
   variants: Variant[];
@@ -68,7 +68,10 @@ export default function VariantSelector({
             <button
               key={variant.id}
               type="button"
-              onClick={() => handleSelect(variant)}
+              onClick={() => {
+                        setSelectedVariant(variant);
+                        onVariantChange?.(variant);
+                      }}
               disabled={!variant.availableForSale}
               className={`flex h-[72px] min-w-[92px] items-center justify-center rounded-[6px] border text-2xl font-medium transition ${
                 isSelected

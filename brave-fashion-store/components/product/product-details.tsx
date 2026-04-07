@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import VariantSelector from "@/components/product/variant-selector";
 import type {
   Product,
@@ -24,31 +25,147 @@ function getCategoryFromProduct(product: Product) {
   return "Brave Fashion";
 }
 
+function getUniqueImages(
+  variantImage: ShopifyImage | null,
+  featuredImage: ShopifyImage | null,
+  productImages: ShopifyImage[]
+) {
+  const allImages = [variantImage, featuredImage, ...productImages].filter(
+    Boolean
+  ) as ShopifyImage[];
+
+  return allImages.filter(
+    (image, index, self) =>
+      index === self.findIndex((item) => item.url === image.url)
+  );
+}
+
 export default function ProductDetails({
   product,
   variants,
 }: ProductDetailsProps) {
-  const initialImage: ShopifyImage | null =
-    variants[0]?.image || product.featuredImage || null;
+  const productImages = useMemo(() => {
+    return product.images?.edges.map((edge) => edge.node) ?? [];
+  }, [product.images]);
 
-  const [selectedImage, setSelectedImage] = useState<ShopifyImage | null>(
-    initialImage
-  );
+  const initialVariantImage = variants[0]?.image || null;
+
+  const [selectedVariantImage, setSelectedVariantImage] =
+    useState<ShopifyImage | null>(initialVariantImage);
 
   const category = useMemo(() => getCategoryFromProduct(product), [product]);
+
+  const carouselImages = useMemo(() => {
+    return getUniqueImages(
+      selectedVariantImage,
+      product.featuredImage,
+      productImages
+    );
+  }, [selectedVariantImage, product.featuredImage, productImages]);
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (!carouselImages.length) {
+      setCurrentIndex(0);
+      return;
+    }
+
+    const selectedUrl = selectedVariantImage?.url;
+
+    if (!selectedUrl) {
+      setCurrentIndex(0);
+      return;
+    }
+
+    const newIndex = carouselImages.findIndex(
+      (image) => image.url === selectedUrl
+    );
+
+    setCurrentIndex(newIndex >= 0 ? newIndex : 0);
+  }, [selectedVariantImage, carouselImages]);
+
+  const currentImage = carouselImages[currentIndex] || null;
+
+  function goToPrevious() {
+    if (!carouselImages.length) return;
+
+    setCurrentIndex((prev) =>
+      prev === 0 ? carouselImages.length - 1 : prev - 1
+    );
+  }
+
+  function goToNext() {
+    if (!carouselImages.length) return;
+
+    setCurrentIndex((prev) =>
+      prev === carouselImages.length - 1 ? 0 : prev + 1
+    );
+  }
+
+  function goToSlide(index: number) {
+    setCurrentIndex(index);
+  }
 
   return (
     <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
       <div className="order-1">
-        {selectedImage ? (
-          <div className="relative aspect-[3/4] overflow-hidden rounded-[6px] bg-white">
-            <Image
-              src={selectedImage.url}
-              alt={selectedImage.altText || product.title}
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
-            />
+        {currentImage ? (
+          <div className="space-y-5">
+            <div className="relative aspect-[3/4] overflow-hidden rounded-[6px] bg-white">
+              <Image
+                key={currentImage.url}
+                src={currentImage.url}
+                alt={currentImage.altText || product.title}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+
+              {carouselImages.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={goToPrevious}
+                    aria-label="Imagem anterior"
+                    className="absolute left-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-neutral-900 shadow-sm transition hover:bg-white"
+                  >
+                    <ChevronLeft size={22} />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={goToNext}
+                    aria-label="Imagem seguinte"
+                    className="absolute right-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-neutral-900 shadow-sm transition hover:bg-white"
+                  >
+                    <ChevronRight size={22} />
+                  </button>
+                </>
+              )}
+            </div>
+
+            {carouselImages.length > 1 && (
+              <div className="flex items-center justify-center gap-2">
+                {carouselImages.map((image, index) => {
+                  const active = index === currentIndex;
+
+                  return (
+                    <button
+                      key={image.url}
+                      type="button"
+                      aria-label={`Ir para imagem ${index + 1}`}
+                      onClick={() => goToSlide(index)}
+                      className={`h-2.5 rounded-full transition-all duration-300 ${
+                        active
+                          ? "w-8 bg-[#B76E2B]"
+                          : "w-2.5 bg-neutral-300 hover:bg-neutral-400"
+                      }`}
+                    />
+                  );
+                })}
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex aspect-[3/4] items-center justify-center rounded-[6px] bg-white text-neutral-400">
@@ -87,7 +204,7 @@ export default function ProductDetails({
               }}
               variants={variants}
               onVariantChange={(variant) => {
-                setSelectedImage(variant.image || product.featuredImage || null);
+                setSelectedVariantImage(variant.image || product.featuredImage || null);
               }}
             />
           ) : (
