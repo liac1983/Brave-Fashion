@@ -64,10 +64,10 @@ export default async function HomePage() {
               ))}
             </div>
 
-            <div className="mt-16 flex justify-center">
+            <div className="mt-16 flex justify-center ">
               <Link
                 href="/produtos"
-                className="flex items-center justify-center gap-4 text-[18px] font-medium no-underline"
+                className="flex items-center justify-center gap-4 text-[18px] font-medium no-underline "
                 style={{
                   minWidth: "360px",
                   border: "2px solid #B76E2B",
