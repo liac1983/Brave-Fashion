@@ -58,15 +58,11 @@ export default function ProductCard({
             </div>
           )}
 
-          <div
-            className={`absolute left-5 top-5 rounded-[6px] px-4 py-2 text-lg ${
-              badge
-                ? "bg-[#B76E2B] text-white"
-                : "bg-[#f7f2ec] text-neutral-700"
-            }`}
-          >
-            {badge}
-          </div>
+          {badge && (
+            <div className="absolute left-5 top-5 rounded-[6px] bg-[#B76E2B] px-4 py-2 text-lg text-white">
+              {badge}
+            </div>
+          )}
         </div>
       </Link>
 
@@ -90,4 +86,3 @@ export default function ProductCard({
     </article>
   );
 }
-
