@@ -8,6 +8,24 @@ export default async function HomePage() {
   const products = await getProducts(4);
   const collections = await getCollections(6);
 
+  const instagramPosts = [
+    {
+      id: "1",
+      image: "/instagram/insta-1.jpg",
+      link: "https://www.instagram.com/p/DW0txvwDLmt/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+    },
+    {
+      id: "2",
+      image: "/instagram/insta-2.jpg",
+      link: "https://www.instagram.com/p/DWzk7ydjLjr/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+    },
+    {
+      id: "3",
+      image: "/instagram/insta-3.jpg",
+      link: "https://www.instagram.com/p/DWbDmQCD48g/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+    },
+  ];
+
   const featuredCollections = collections
     .filter((collection) => collection.handle !== "pagina-inicial")
     .slice(0, 3);
@@ -143,22 +161,74 @@ export default async function HomePage() {
             </div>
           </section>
 
-
           <section>
-            <div className="mb-8 mt-20">
-              <h2 className="text-2xl font-semibold">Segue a Brave Fashion</h2>
-              <p className="mt-2 text-neutral-600">
-                Inspiração, novidades e looks no Instagram.
+            <div className="mb-10 mt-20 text-center">
+              <h2 className="font-serif text-4xl font-medium tracking-tight text-neutral-900 md:text-6xl">
+                Segue a Brave Fashion
+              </h2>
+              <p className="mx-auto mt-4 max-w-3xl text-lg text-neutral-500 md:text-2xl">
+                Inspiração, novidades e looks nas redes sociais.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {[1, 2, 3, 4].map((item) => (
-                <div
-                  key={item}
-                  className="aspect-square rounded-3xl bg-white"
-                />
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              {instagramPosts.map((post) => (
+                <a
+                  key={post.id}
+                  href={post.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group block"
+                >
+                  {/* Mobile */}
+                  <div className="overflow-hidden rounded-[6px] bg-white md:hidden">
+                    <Image
+                      src={post.image}
+                      alt="Publicação da Brave Fashion"
+                      width={500}
+                      height={700}
+                      sizes="100vw"
+                      className="w-full h-auto transition duration-500"
+                    />
+                  </div>
+
+                  {/* Desktop */}
+                  <div className="hidden overflow-hidden rounded-[6px] bg-white md:block md:h-[500px]">
+                    <Image
+                      src={post.image}
+                      alt="Publicação da Brave Fashion"
+                      width={800}
+                      height={1000}
+                      sizes="33vw"
+                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                </a>
               ))}
+            </div>
+
+
+            <div className="mt-12 flex justify-center">
+              <a
+                href="https://www.instagram.com/bravefashionbypaulavalente/"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-4 text-[18px] font-medium no-underline"
+                style={{
+                  minWidth: "320px",
+                  border: "2px solid #B76E2B",
+                  color: "#B76E2B",
+                  padding: "20px 48px",
+                }}
+              >
+                <span className="font-serif">Ver Mais</span>
+                <span
+                  aria-hidden="true"
+                  style={{ fontSize: "24px", lineHeight: 1 }}
+                >
+                  →
+                </span>
+              </a>
             </div>
           </section>
 
