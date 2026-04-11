@@ -91,14 +91,14 @@ export default function VariantSelector({
         <div className="pt-2">
           <AddToCartButton
             item={{
-              id: product.id,
+             
               variantId: selectedVariant.id,
-              handle: product.handle,
-              title: product.title,
-              variantTitle: selectedVariant.title,
-              price: selectedVariant.price.amount,
-              currencyCode: selectedVariant.price.currencyCode,
-              image: selectedVariant.image || product.featuredImage,
+            
+          
+
+
+       
+
             }}
             className="w-full rounded-[6px] bg-[#B76E2B] px-6 py-5 text-2xl font-medium text-white transition hover:bg-[#a86424]"
           />

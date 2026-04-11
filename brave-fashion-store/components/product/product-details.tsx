@@ -204,7 +204,16 @@ export default function ProductDetails({
               }}
               variants={variants}
               onVariantChange={(variant) => {
-                setSelectedVariantImage(variant.image || product.featuredImage || null);
+                const normalizedImage = variant.image
+                  ? {
+                      url: variant.image.url,
+                      altText: variant.image.altText,
+                      width: variant.image.width ?? null,
+                      height: variant.image.height ?? null,
+                    }
+                  : product.featuredImage || null;
+
+                setSelectedVariantImage(normalizedImage);
               }}
             />
           ) : (
