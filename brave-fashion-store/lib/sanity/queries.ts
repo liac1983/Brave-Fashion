@@ -66,3 +66,9 @@ export const PRODUCTS_BY_CATEGORY_QUERY = groq`
     ${productFields}
   }
 `
+
+export const NEW_PRODUCTS_QUERY = groq`
+  *[_type == "product" && available == true && isNew == true] | order(_createdAt desc) {
+    ${productFields}
+  }
+`

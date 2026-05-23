@@ -9,7 +9,8 @@ import { Menu } from "lucide-react";
 
 const mobileLinks = [
   { href: "/", label: "Início" },
-  { href: "/produtos", label: "Loja" },
+  { href: "/produtos", label: "Produtos" },
+  { href: "/novidades", label: "Novidades" },
   { href: "/promocoes", label: "Promoções" },
 ];
 

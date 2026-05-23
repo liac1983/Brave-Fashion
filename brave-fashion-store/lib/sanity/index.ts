@@ -5,6 +5,7 @@ import {
   PRODUCTS_QUERY,
   PRODUCT_BY_HANDLE_QUERY,
   PRODUCTS_BY_CATEGORY_QUERY,
+  NEW_PRODUCTS_QUERY,
 } from './queries'
 import type { Product, Collection } from './types'
 
@@ -78,4 +79,9 @@ export async function getCollectionByHandle(
       edges: (products ?? []).map((p: any) => ({ node: mapProduct(p) })),
     },
   }
+}
+
+export async function getNewProducts(): Promise<Product[]> {
+  const raw = await client.fetch(NEW_PRODUCTS_QUERY)
+  return (raw ?? []).map(mapProduct)
 }
