@@ -1,9 +1,5 @@
 import Link from "next/link";
-import {
-  getCollectionByHandle,
-  getCollections,
-  getProducts,
-} from "@/lib/sanity";
+import { getProducts } from "@/lib/sanity";
 import ProductCard from "@/components/product/product-card";
 import ProductsSortSelect from "@/components/product/products-sort-select";
 
@@ -14,43 +10,23 @@ type ProdutosPageProps = {
   }>;
 };
 
-const allowedCategoryHandles = [
-  "vestidos",
-  "casacos",
-  "conjuntos",
-  "saias",
-  "calcoes",
-  "tshirts",
-  "blusas",
-  "camisas",
-  "acessorios",
-  "calcas",
-];
-
-export default async function ProdutosPage({
-  searchParams,
-}: ProdutosPageProps) {
+export default async function ProdutosPage({ searchParams }: ProdutosPageProps) {
   const params = (await searchParams) || {};
   const categoria = params.categoria || "todos";
   const ordenar = params.ordenar || "destaques";
 
-  const collections = await getCollections(30);
+  const allProducts = await getProducts(100);
 
-  const categoryCollections = collections.filter((collection) =>
-    allowedCategoryHandles.includes(collection.handle)
-  );
+  const uniqueCategories = Array.from(
+    new Set(allProducts.map((p) => p.category).filter(Boolean))
+  ) as string[];
 
-  let products: Awaited<ReturnType<typeof getProducts>> = [];
+  const filtered =
+    categoria === "todos"
+      ? allProducts
+      : allProducts.filter((p) => p.category === categoria);
 
-  if (categoria === "todos") {
-    products = await getProducts(24);
-  } else {
-    const selectedCollection = await getCollectionByHandle(categoria, 24);
-    products =
-      selectedCollection?.products?.edges.map((edge) => edge.node) ?? [];
-  }
-
-  const sortedProducts = [...products];
+  const sortedProducts = [...filtered];
 
   if (ordenar === "preco-asc") {
     sortedProducts.sort(
@@ -74,10 +50,7 @@ export default async function ProdutosPage({
 
   const categories = [
     { label: "Todos", value: "todos" },
-    ...categoryCollections.map((collection) => ({
-      label: collection.title,
-      value: collection.handle,
-    })),
+    ...uniqueCategories.map((cat) => ({ label: cat, value: cat })),
   ];
 
   return (
@@ -105,7 +78,6 @@ export default async function ProdutosPage({
                 <div className="mt-6 space-y-4">
                   {categories.map((item) => {
                     const active = categoria === item.value;
-
                     return (
                       <Link
                         key={item.value}
@@ -132,10 +104,7 @@ export default async function ProdutosPage({
                 </label>
 
                 <div className="mt-4">
-                  <ProductsSortSelect
-                    categoria={categoria}
-                    ordenar={ordenar}
-                  />
+                  <ProductsSortSelect categoria={categoria} ordenar={ordenar} />
                 </div>
               </div>
             </div>
@@ -150,9 +119,7 @@ export default async function ProdutosPage({
                     title={product.title}
                     handle={product.handle}
                     image={product.featuredImage}
-                    price={`€${Number(
-                      product.priceRange.minVariantPrice.amount
-                    ).toFixed(2)}`}
+                    price={`€${Number(product.priceRange.minVariantPrice.amount).toFixed(2)}`}
                   />
                 ))}
               </div>
