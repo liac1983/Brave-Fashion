@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/layout/header";
-import Footer from "@/components/layout/footer";
 import { FavoritesProvider } from "@/components/favorites/favorites-provider";
 
 export const metadata: Metadata = {
@@ -17,13 +15,8 @@ export default function RootLayout({
   return (
     <html lang="pt">
       <body className="min-h-screen bg-white text-black">
-        <FavoritesProvider>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </FavoritesProvider>
+        <FavoritesProvider>{children}</FavoritesProvider>
       </body>
     </html>
   );
 }
-
