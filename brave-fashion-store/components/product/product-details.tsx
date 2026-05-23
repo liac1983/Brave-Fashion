@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product, SanityImage } from "@/lib/sanity/types";
+import WhatsAppButton from "@/components/product/whatsapp-button";
 
 type ProductDetailsProps = {
   product: Product;
@@ -117,6 +118,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             €{Number(product.priceRange.minVariantPrice.amount).toFixed(2)}
           </p>
         </div>
+
+        <WhatsAppButton productTitle={product.title} productHandle={product.handle} />
 
         <div className="mt-10 border-b border-[#e7d9cf] pb-10">
           <p className="max-w-2xl text-[18px] leading-9 text-neutral-600 md:text-[19px]">
