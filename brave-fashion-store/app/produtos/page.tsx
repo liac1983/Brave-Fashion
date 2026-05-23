@@ -3,7 +3,7 @@ import {
   getCollectionByHandle,
   getCollections,
   getProducts,
-} from "@/lib/shopify";
+} from "@/lib/sanity";
 import ProductCard from "@/components/product/product-card";
 import ProductsSortSelect from "@/components/product/products-sort-select";
 

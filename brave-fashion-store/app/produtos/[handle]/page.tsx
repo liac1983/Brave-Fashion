@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { getProductByHandle, getProducts } from "@/lib/shopify";
+import { getProductByHandle, getProducts } from "@/lib/sanity";
 import ProductDetails from "@/components/product/product-details";
 import RelatedProducts from "@/components/product/related-products";
 
@@ -19,8 +19,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const variants = product.variants?.edges.map((edge) => edge.node) ?? [];
-
   const allProducts = await getProducts(8);
   const relatedProducts = allProducts
     .filter((item) => item.handle !== product.handle)
@@ -37,7 +35,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <span>Voltar à loja</span>
         </Link>
 
-        <ProductDetails product={product} variants={variants} />
+        <ProductDetails product={product} />
 
         <RelatedProducts
           title="Também pode gostar"

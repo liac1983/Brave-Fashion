@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { CartProvider } from "@/components/cart/cart-provider";
+import { FavoritesProvider } from "@/components/favorites/favorites-provider";
 
 export const metadata: Metadata = {
   title: "Brave Fashion by Paula Valente",
@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="pt">
       <body className="min-h-screen bg-white text-black">
-        <CartProvider>{children}</CartProvider>
+        <FavoritesProvider>{children}</FavoritesProvider>
       </body>
     </html>
   );

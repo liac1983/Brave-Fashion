@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { getProducts } from "@/lib/shopify";
+import { getProducts } from "@/lib/sanity";
 
 export default async function TestProductsPage() {
   const products = await getProducts(6);

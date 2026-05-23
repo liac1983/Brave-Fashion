@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getCollections } from "@/lib/shopify";
+import { getCollections } from "@/lib/sanity";
 
 export default async function ColecoesPage() {
   const collections = await getCollections(12);

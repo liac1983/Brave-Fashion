@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Logo from "./logo";
 import MainNav from "./main-nav";
-import CartButton from "./cart-button";
+import FavoritesButton from "./favorites-button";
 import { Menu } from "lucide-react";
 
 const mobileLinks = [
@@ -38,7 +38,7 @@ export default function Header() {
           <MainNav />
         </div>
 
-        <CartButton />
+        <FavoritesButton />
       </div>
 
       {isOpen && (

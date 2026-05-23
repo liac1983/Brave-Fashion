@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getCollections, getProducts } from "@/lib/shopify";
+import { getCollections, getProducts } from "@/lib/sanity";
 import NewsletterForm from "@/components/newsletter-form";
 import HeroSection from "@/components/home/hero-section";
 

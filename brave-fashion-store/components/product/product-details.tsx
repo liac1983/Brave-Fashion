@@ -1,110 +1,45 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import VariantSelector from "@/components/product/variant-selector";
-import type {
-  Product,
-  ProductVariant,
-  ShopifyImage,
-} from "@/lib/shopify/types";
+import type { Product, SanityImage } from "@/lib/sanity/types";
 
 type ProductDetailsProps = {
   product: Product;
-  variants: ProductVariant[];
 };
 
 function getCategoryFromProduct(product: Product) {
+  if (product.category) return product.category;
   const title = product.title.toLowerCase();
-
   if (title.includes("vestido")) return "Vestidos";
   if (title.includes("casaco")) return "Casacos";
   if (title.includes("conjunto")) return "Conjuntos";
-
   return "Brave Fashion";
 }
 
-function getUniqueImages(
-  variantImage: ShopifyImage | null,
-  featuredImage: ShopifyImage | null,
-  productImages: ShopifyImage[]
-) {
-  const allImages = [variantImage, featuredImage, ...productImages].filter(
-    Boolean
-  ) as ShopifyImage[];
-
-  return allImages.filter(
-    (image, index, self) =>
-      index === self.findIndex((item) => item.url === image.url)
-  );
-}
-
-export default function ProductDetails({
-  product,
-  variants,
-}: ProductDetailsProps) {
-  const productImages = useMemo(() => {
-    return product.images?.edges.map((edge) => edge.node) ?? [];
-  }, [product.images]);
-
-  const initialVariantImage = variants[0]?.image || null;
-
-  const [selectedVariantImage, setSelectedVariantImage] =
-    useState<ShopifyImage | null>(initialVariantImage);
-
-  const category = useMemo(() => getCategoryFromProduct(product), [product]);
-
-  const carouselImages = useMemo(() => {
-    return getUniqueImages(
-      selectedVariantImage,
-      product.featuredImage,
-      productImages
-    );
-  }, [selectedVariantImage, product.featuredImage, productImages]);
+export default function ProductDetails({ product }: ProductDetailsProps) {
+  const carouselImages = useMemo<SanityImage[]>(() => {
+    const all = product.images?.edges.map((e) => e.node) ?? [];
+    if (all.length > 0) return all;
+    if (product.featuredImage) return [product.featuredImage];
+    return [];
+  }, [product.images, product.featuredImage]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    if (!carouselImages.length) {
-      setCurrentIndex(0);
-      return;
-    }
-
-    const selectedUrl = selectedVariantImage?.url;
-
-    if (!selectedUrl) {
-      setCurrentIndex(0);
-      return;
-    }
-
-    const newIndex = carouselImages.findIndex(
-      (image) => image.url === selectedUrl
-    );
-
-    setCurrentIndex(newIndex >= 0 ? newIndex : 0);
-  }, [selectedVariantImage, carouselImages]);
-
-  const currentImage = carouselImages[currentIndex] || null;
+  const currentImage = carouselImages[currentIndex] ?? null;
+  const category = useMemo(() => getCategoryFromProduct(product), [product]);
 
   function goToPrevious() {
-    if (!carouselImages.length) return;
-
     setCurrentIndex((prev) =>
       prev === 0 ? carouselImages.length - 1 : prev - 1
     );
   }
 
   function goToNext() {
-    if (!carouselImages.length) return;
-
     setCurrentIndex((prev) =>
       prev === carouselImages.length - 1 ? 0 : prev + 1
     );
-  }
-
-  function goToSlide(index: number) {
-    setCurrentIndex(index);
   }
 
   return (
@@ -147,23 +82,19 @@ export default function ProductDetails({
 
             {carouselImages.length > 1 && (
               <div className="flex items-center justify-center gap-2">
-                {carouselImages.map((image, index) => {
-                  const active = index === currentIndex;
-
-                  return (
-                    <button
-                      key={image.url}
-                      type="button"
-                      aria-label={`Ir para imagem ${index + 1}`}
-                      onClick={() => goToSlide(index)}
-                      className={`h-2.5 rounded-full transition-all duration-300 ${
-                        active
-                          ? "w-8 bg-[#B76E2B]"
-                          : "w-2.5 bg-neutral-300 hover:bg-neutral-400"
-                      }`}
-                    />
-                  );
-                })}
+                {carouselImages.map((image, index) => (
+                  <button
+                    key={image.url}
+                    type="button"
+                    aria-label={`Ir para imagem ${index + 1}`}
+                    onClick={() => setCurrentIndex(index)}
+                    className={`h-2.5 rounded-full transition-all duration-300 ${
+                      index === currentIndex
+                        ? "w-8 bg-[#B76E2B]"
+                        : "w-2.5 bg-neutral-300 hover:bg-neutral-400"
+                    }`}
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -191,40 +122,6 @@ export default function ProductDetails({
           <p className="max-w-2xl text-[18px] leading-9 text-neutral-600 md:text-[19px]">
             {product.description || "Descrição em atualização."}
           </p>
-        </div>
-
-        <div className="mt-10">
-          {variants.length > 0 ? (
-            <VariantSelector
-              product={{
-                id: product.id,
-                handle: product.handle,
-                title: product.title,
-                featuredImage: product.featuredImage,
-              }}
-              variants={variants}
-              onVariantChange={(variant) => {
-                const normalizedImage = variant.image
-                  ? {
-                      url: variant.image.url,
-                      altText: variant.image.altText,
-                      width: variant.image.width ?? null,
-                      height: variant.image.height ?? null,
-                    }
-                  : product.featuredImage || null;
-
-                setSelectedVariantImage(normalizedImage);
-              }}
-            />
-          ) : (
-            <button
-              type="button"
-              disabled
-              className="mt-6 w-full rounded-[6px] bg-neutral-300 px-6 py-5 text-lg font-medium text-white"
-            >
-              Indisponível
-            </button>
-          )}
         </div>
 
         <div className="mt-8 border-t border-[#e7d9cf]">
@@ -268,4 +165,3 @@ export default function ProductDetails({
     </div>
   );
 }
-

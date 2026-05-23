@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getCollectionByHandle } from "@/lib/shopify";
+import { getCollectionByHandle } from "@/lib/sanity";
 import ProductGrid from "@/components/product/product-grid";
 
 type CollectionPageProps = {

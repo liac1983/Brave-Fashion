@@ -1,4 +1,4 @@
-import type { Product } from "@/lib/shopify/types";
+import type { Product } from "@/lib/sanity/types";
 import ProductGrid from "./product-grid";
 
 type RelatedProductsProps = {
