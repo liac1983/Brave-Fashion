@@ -4,7 +4,6 @@ import {
   COLLECTION_BY_HANDLE_QUERY,
   PRODUCTS_QUERY,
   PRODUCT_BY_HANDLE_QUERY,
-  PRODUCTS_BY_CATEGORY_QUERY,
   NEW_PRODUCTS_QUERY,
 } from './queries'
 import type { Product, Collection } from './types'
@@ -59,24 +58,19 @@ export async function getCollections(first = 12): Promise<Collection[]> {
 
 export async function getCollectionByHandle(
   handle: string,
-  first = 12
 ): Promise<Collection | null> {
   const col = await client.fetch(COLLECTION_BY_HANDLE_QUERY, { handle })
-  const products = await client.fetch(PRODUCTS_BY_CATEGORY_QUERY, {
-    category: handle,
-    limit: first - 1,
-  })
 
-  if (!col && (!products || products.length === 0)) return null
+  if (!col) return null
 
   return {
-    id: col?._id ?? handle,
+    id: col._id,
     handle,
-    title: col?.title ?? handle,
-    description: col?.description ?? '',
-    image: col?.image ?? null,
+    title: col.title,
+    description: col.description ?? '',
+    image: col.image ?? null,
     products: {
-      edges: (products ?? []).map((p: any) => ({ node: mapProduct(p) })),
+      edges: (col.products ?? []).map((p: any) => ({ node: mapProduct(p) })),
     },
   }
 }

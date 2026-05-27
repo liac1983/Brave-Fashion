@@ -4,7 +4,7 @@ import Link from "next/link";
 type ProductCardProps = {
   title: string;
   handle: string;
-  price: string;
+  price?: string;
   compareAtPrice?: string;
   badge?: string;
   image?: {
@@ -13,33 +13,13 @@ type ProductCardProps = {
   } | null;
 };
 
-function getCategoryFromTitle(title: string) {
-  const lower = title.toLowerCase();
-
-  if (lower.includes("vestido")) return "Vestidos";
-  if (lower.includes("casaco")) return "Casacos";
-  if (lower.includes("conjunto")) return "Conjuntos";
-  if (lower.includes("saia")) return "Saias";
-  if (
-    lower.includes("calça") ||
-    lower.includes("calcas") ||
-    lower.includes("calças")
-  )
-    return "Calças";
-
-  return "Brave Fashion";
-}
 
 export default function ProductCard({
   title,
   handle,
-  price,
-  compareAtPrice,
   badge,
   image,
 }: ProductCardProps) {
-  const category = getCategoryFromTitle(title);
-
   return (
     <article className="group">
       <Link href={`/produtos/${handle}`} className="block">
@@ -72,16 +52,6 @@ export default function ProductCard({
             {title}
           </h3>
         </Link>
-
-        <div className="mt-3 flex items-center gap-3">
-          <p className="text-[22px] text-neutral-900">{price}</p>
-
-          {compareAtPrice ? (
-            <p className="text-[18px] text-neutral-400 line-through">
-              {compareAtPrice}
-            </p>
-          ) : null}
-        </div>
       </div>
     </article>
   );

@@ -57,6 +57,9 @@ export const COLLECTION_BY_HANDLE_QUERY = groq`
     description,
     "image": image {
       ${imageFields}
+    },
+    "products": products[]-> {
+      ${productFields}
     }
   }
 `

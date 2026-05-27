@@ -74,9 +74,6 @@ export default async function HomePage() {
                     <h3 className="font-serif text-2xl text-neutral-900">
                       {product.title}
                     </h3>
-                    <p className="mt-3 text-2xl text-neutral-500">
-                      €{Number(product.priceRange.minVariantPrice.amount).toFixed(2)}
-                    </p>
                   </div>
                 </Link>
               ))}

@@ -30,6 +30,12 @@ export const collection = defineType({
       type: 'image',
       options: { hotspot: true },
     }),
+    defineField({
+      name: 'products',
+      title: 'Produtos',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'product' }] }],
+    }),
   ],
   preview: {
     select: { title: 'title', media: 'image' },
