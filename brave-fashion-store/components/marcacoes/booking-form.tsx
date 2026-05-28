@@ -44,7 +44,7 @@ export default function BookingForm() {
     }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
 
     const lines = [
@@ -73,7 +73,7 @@ export default function BookingForm() {
   const isValid = form.nome.trim() && form.telefone.trim() && form.tipoVisita;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-16">
 
       <div className="grid gap-8 sm:grid-cols-2">
         <div>
@@ -193,7 +193,7 @@ export default function BookingForm() {
         Enviar pedido via WhatsApp
       </button>
 
-      <p className="text-sm text-neutral-500">
+      <p className="mt-6 text-sm text-neutral-500">
         Ao clicar, será redirecionada para o WhatsApp com os seus dados já preenchidos.
         A Paula irá confirmar a data e hora disponível.
       </p>
