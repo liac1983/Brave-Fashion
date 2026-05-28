@@ -8,7 +8,6 @@ type HeartButtonProps = {
     id: string;
     handle: string;
     title: string;
-    price: string;
     image: { url: string; altText: string | null } | null;
   };
   size?: "sm" | "lg";

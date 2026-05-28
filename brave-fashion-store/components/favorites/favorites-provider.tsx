@@ -6,7 +6,6 @@ type FavoriteItem = {
   id: string;
   handle: string;
   title: string;
-  price: string;
   image: { url: string; altText: string | null } | null;
 };
 

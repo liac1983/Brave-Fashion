@@ -25,10 +25,10 @@ export default async function NovidadesPage() {
             {products.map((product) => (
               <ProductCard
                 key={product.id}
+                id={product.id}
                 title={product.title}
                 handle={product.handle}
                 image={product.featuredImage}
-                price={`€${Number(product.priceRange.minVariantPrice.amount).toFixed(2)}`}
                 badge="Novidade"
               />
             ))}

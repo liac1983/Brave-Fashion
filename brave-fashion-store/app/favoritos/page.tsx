@@ -59,7 +59,6 @@ export default function FavoritosPage() {
                     <h3 className="font-serif text-[24px] leading-snug text-neutral-900">
                       {item.title}
                     </h3>
-                    <p className="mt-3 text-[22px] text-neutral-900">{item.price}</p>
                   </div>
                 </Link>
               </article>

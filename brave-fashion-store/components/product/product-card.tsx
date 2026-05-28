@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
+import HeartButton from "@/components/favorites/heart-button";
 
 type ProductCardProps = {
+  id: string;
   title: string;
   handle: string;
   price?: string;
@@ -13,15 +15,21 @@ type ProductCardProps = {
   } | null;
 };
 
-
 export default function ProductCard({
+  id,
   title,
   handle,
   badge,
   image,
 }: ProductCardProps) {
   return (
-    <article className="group">
+    <article className="group relative">
+      <div className="absolute right-3 top-3 z-10">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-sm">
+          <HeartButton product={{ id, handle, title, image: image ?? null }} />
+        </div>
+      </div>
+
       <Link href={`/produtos/${handle}`} className="block">
         <div className="relative aspect-[3/4] overflow-hidden rounded-[6px] bg-white">
           {image ? (

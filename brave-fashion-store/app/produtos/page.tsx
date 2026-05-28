@@ -116,10 +116,10 @@ export default async function ProdutosPage({ searchParams }: ProdutosPageProps) 
                 {sortedProducts.map((product) => (
                   <ProductCard
                     key={product.id}
+                    id={product.id}
                     title={product.title}
                     handle={product.handle}
                     image={product.featuredImage}
-                    price={`€${Number(product.priceRange.minVariantPrice.amount).toFixed(2)}`}
                   />
                 ))}
               </div>

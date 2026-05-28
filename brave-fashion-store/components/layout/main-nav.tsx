@@ -5,6 +5,7 @@ const links = [
   { href: "/produtos", label: "Produtos" },
   { href: "/novidades", label: "Novidades" },
   { href: "/promocoes", label: "Promoções" },
+  { href: "/marcacoes", label: "Marcar Visita" },
 ];
 
 export default function MainNav() {

@@ -35,11 +35,10 @@ export default async function PromocoesPage() {
               return (
                 <ProductCard
                   key={product.id}
+                  id={product.id}
                   title={product.title}
                   handle={product.handle}
                   image={product.featuredImage}
-                  price={`€${price.toFixed(2)}`}
-                  compareAtPrice={`€${originalPrice.toFixed(2)}`}
                   badge={discountPercentage ? `-${discountPercentage}%` : "Promoção"}
                 />
               );

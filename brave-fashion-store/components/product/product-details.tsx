@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product, SanityImage } from "@/lib/sanity/types";
 import WhatsAppButton from "@/components/product/whatsapp-button";
+import HeartButton from "@/components/favorites/heart-button";
 
 type ProductDetailsProps = {
   product: Product;
@@ -109,9 +110,22 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       <div className="order-2 lg:pt-8">
         <p className="text-[15px] text-neutral-500">{category}</p>
 
-        <h1 className="mt-4 font-serif text-4xl leading-tight text-neutral-900 md:text-[58px]">
-          {product.title}
-        </h1>
+        <div className="mt-4 flex items-start justify-between gap-4">
+          <h1 className="font-serif text-4xl leading-tight text-neutral-900 md:text-[58px]">
+            {product.title}
+          </h1>
+          <div className="mt-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#e7d9cf] bg-white">
+            <HeartButton
+              product={{
+                id: product.id,
+                handle: product.handle,
+                title: product.title,
+                image: product.featuredImage,
+              }}
+              size="lg"
+            />
+          </div>
+        </div>
 
         <WhatsAppButton productTitle={product.title} productHandle={product.handle} />
 
