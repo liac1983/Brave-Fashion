@@ -6,6 +6,7 @@ import Logo from "./logo";
 import MainNav from "./main-nav";
 import FavoritesButton from "./favorites-button";
 import { Menu } from "lucide-react";
+import { useUser, UserButton, SignInButton } from "@clerk/nextjs";
 
 const mobileLinks = [
   { href: "/", label: "Início" },
@@ -17,6 +18,7 @@ const mobileLinks = [
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const { isSignedIn, isLoaded } = useUser();
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#e9dfd3] bg-[#f7f2ec]/95 backdrop-blur">
@@ -40,7 +42,20 @@ export default function Header() {
           <MainNav />
         </div>
 
-        <FavoritesButton />
+        <div className="flex items-center gap-3">
+          <FavoritesButton />
+          {isLoaded && (
+            isSignedIn ? (
+              <UserButton />
+            ) : (
+              <SignInButton mode="modal">
+                <button className="rounded-[6px] border border-[#e7d9cf] px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-[#B76E2B] hover:text-[#B76E2B]">
+                  Entrar
+                </button>
+              </SignInButton>
+            )
+          )}
+        </div>
       </div>
 
       {isOpen && (
