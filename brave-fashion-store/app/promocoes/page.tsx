@@ -39,6 +39,8 @@ export default async function PromocoesPage() {
                   title={product.title}
                   handle={product.handle}
                   image={product.featuredImage}
+                  price={`€${price.toFixed(2)}`}
+                  compareAtPrice={`€${originalPrice.toFixed(2)}`}
                   badge={discountPercentage ? `-${discountPercentage}%` : "Promoção"}
                 />
               );

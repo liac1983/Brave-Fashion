@@ -30,6 +30,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
           title={product.title}
           handle={product.handle}
           image={product.featuredImage}
+          price={`€${Number(product.priceRange.minVariantPrice.amount).toFixed(2)}`}
         />
       ))}
     </div>

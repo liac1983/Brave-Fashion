@@ -19,6 +19,8 @@ export default function ProductCard({
   id,
   title,
   handle,
+  price,
+  compareAtPrice,
   badge,
   image,
 }: ProductCardProps) {
@@ -60,6 +62,14 @@ export default function ProductCard({
             {title}
           </h3>
         </Link>
+        {price && (
+          <div className="mt-3 flex items-center gap-3">
+            <p className="text-[22px] text-neutral-900">{price}</p>
+            {compareAtPrice && (
+              <p className="text-[18px] text-neutral-400 line-through">{compareAtPrice}</p>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );

@@ -128,6 +128,10 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           </div>
         </div>
 
+        <p className="mt-6 text-3xl font-semibold text-neutral-900">
+          €{Number(product.priceRange.minVariantPrice.amount).toFixed(2)}
+        </p>
+
         <WhatsAppButton productTitle={product.title} productHandle={product.handle} />
         <AddToListButton productId={product.id} />
 
