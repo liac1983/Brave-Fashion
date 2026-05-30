@@ -136,7 +136,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         <AddToListButton productId={product.id} />
 
         <div className="mt-10 border-b border-[#e7d9cf] pb-10">
-          <p className="max-w-2xl text-[18px] leading-9 text-neutral-600 md:text-[19px]">
+          <p className="max-w-2xl whitespace-pre-line text-[18px] leading-9 text-neutral-600 md:text-[19px]">
             {product.description || "Descrição em atualização."}
           </p>
         </div>
