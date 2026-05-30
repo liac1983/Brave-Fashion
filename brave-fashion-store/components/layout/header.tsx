@@ -7,7 +7,6 @@ import MainNav from "./main-nav";
 import FavoritesButton from "./favorites-button";
 import { Menu } from "lucide-react";
 import { useUser, UserButton, SignInButton } from "@clerk/nextjs";
-import GoogleTranslate from "./google-translate";
 
 const mobileLinks = [
   { href: "/", label: "Início" },
@@ -44,7 +43,6 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-3">
-          <GoogleTranslate />
           <FavoritesButton />
           {isLoaded && (
             isSignedIn ? (

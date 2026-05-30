@@ -25,29 +25,3 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Google Translate — esconde barra do topo */
-.goog-te-banner-frame { display: none !important; }
-body { top: 0 !important; }
-
-/* Google Translate — estilo do widget */
-.goog-te-gadget { font-size: 0 !important; }
-.goog-te-gadget-icon { display: none !important; }
-.goog-logo-link { display: none !important; }
-
-.goog-te-combo {
-  font-family: inherit !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  color: #525252 !important;
-  background-color: white !important;
-  border: 1px solid #e7d9cf !important;
-  border-radius: 6px !important;
-  padding: 6px 10px 6px 30px !important;
-  cursor: pointer !important;
-  outline: none !important;
-  transition: border-color 0.15s !important;
-  appearance: auto !important;
-  max-width: 150px !important;
-}
-.goog-te-combo:hover { border-color: #B76E2B !important; }
-.goog-te-combo:focus { border-color: #B76E2B !important; }
