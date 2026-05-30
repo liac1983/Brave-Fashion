@@ -50,28 +50,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Apoio ao Cliente */}
-          <div>
-            <h3 className="mb-8 font-serif text-[20px] text-neutral-900">
-              Apoio ao Cliente
-            </h3>
-
-            <ul className="space-y-4 text-[16px] text-neutral-500 md:text-[18px]">
-            
-              <li>
-                <Link href="/envios" className="transition hover:text-neutral-900">
-                  Envios e Devoluções
-                </Link>
-              </li>
-              <li>
-                <Link href="/perguntas-frequentes" className="transition hover:text-neutral-900">
-                  Perguntas Frequentes
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Redes sociais */}
+{/* Redes sociais */}
           <div>
             <h3 className="mb-8 font-serif text-[20px] text-neutral-900">
               Siga-nos
