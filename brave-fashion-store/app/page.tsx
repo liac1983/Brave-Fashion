@@ -158,6 +158,72 @@ export default async function HomePage() {
             </div>
           </section>
 
+          <section className="py-20">
+            <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
+
+              <div>
+                <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#B76E2B]">
+                  Atendimento Personalizado
+                </p>
+                <h2 className="mt-4 font-serif text-4xl leading-tight text-neutral-900 md:text-6xl">
+                  A sua personal stylist está aqui para si
+                </h2>
+                <p className="mt-6 text-lg leading-relaxed text-neutral-500 md:text-xl">
+                  Na Brave Fashion, cada cliente é única. A Paula conhece o seu estilo,
+                  os seus gostos e as ocasiões especiais da sua vida — e é com esse
+                  conhecimento que a acompanha em cada escolha.
+                </p>
+                <p className="mt-4 text-lg leading-relaxed text-neutral-500 md:text-xl">
+                  Não é como nas lojas de fast fashion. Aqui há tempo para experimentar
+                  com calma, para receber uma opinião honesta, e para sair com a certeza
+                  de que escolheu bem.
+                </p>
+
+                <Link
+                  href="/marcacoes"
+                  className="mt-10 inline-flex items-center gap-3 rounded-[6px] bg-[#B76E2B] px-8 py-4 font-serif text-lg text-white transition hover:bg-[#9d5e24]"
+                >
+                  Marcar uma visita
+                  <span aria-hidden="true" style={{ fontSize: "20px" }}>→</span>
+                </Link>
+              </div>
+
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                {[
+                  {
+                    icon: "✦",
+                    title: "Conhece o seu estilo",
+                    desc: "A Paula acompanha as suas clientes ao longo do tempo e contacta-as quando chegam peças que sabe que vão gostar.",
+                  },
+                  {
+                    icon: "✦",
+                    title: "Ajuda para eventos especiais",
+                    desc: "Casamento, batizado, formatura ou qualquer ocasião importante — juntas encontram o look perfeito para o momento.",
+                  },
+                  {
+                    icon: "✦",
+                    title: "Experimenta com calma",
+                    desc: "Venha à loja sem pressa, experimente as peças e receba uma opinião sincera de quem a conhece.",
+                  },
+                  {
+                    icon: "✦",
+                    title: "Um toque pessoal",
+                    desc: "Mais do que vender roupa, a Brave Fashion cria uma relação de confiança com cada cliente.",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-[6px] border border-[#e7d9cf] bg-white p-6"
+                  >
+                    <span className="text-[#B76E2B]">{item.icon}</span>
+                    <h3 className="mt-3 font-serif text-xl text-neutral-900">{item.title}</h3>
+                    <p className="mt-2 text-[15px] leading-7 text-neutral-500">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
           <section>
             <div className="mb-10 mt-20 text-center">
               <h2 className="font-serif text-4xl font-medium tracking-tight text-neutral-900 md:text-6xl">
