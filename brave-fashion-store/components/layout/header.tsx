@@ -46,7 +46,15 @@ export default function Header() {
           <FavoritesButton />
           {isLoaded && (
             isSignedIn ? (
-              <UserButton />
+              <UserButton>
+                <UserButton.MenuItems>
+                  <UserButton.Link
+                    label="As minhas listas"
+                    labelIcon={<span>📁</span>}
+                    href="/perfil"
+                  />
+                </UserButton.MenuItems>
+              </UserButton>
             ) : (
               <SignInButton mode="modal">
                 <button className="rounded-[6px] border border-[#e7d9cf] px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-[#B76E2B] hover:text-[#B76E2B]">

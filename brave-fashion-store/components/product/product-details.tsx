@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product, SanityImage } from "@/lib/sanity/types";
 import WhatsAppButton from "@/components/product/whatsapp-button";
 import HeartButton from "@/components/favorites/heart-button";
+import AddToListButton from "@/components/favorites/add-to-list-button";
 
 type ProductDetailsProps = {
   product: Product;
@@ -128,6 +129,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         </div>
 
         <WhatsAppButton productTitle={product.title} productHandle={product.handle} />
+        <AddToListButton productId={product.id} />
 
         <div className="mt-10 border-b border-[#e7d9cf] pb-10">
           <p className="max-w-2xl text-[18px] leading-9 text-neutral-600 md:text-[19px]">
