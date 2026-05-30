@@ -10,10 +10,10 @@ import { useUser, UserButton, SignInButton } from "@clerk/nextjs";
 
 const mobileLinks = [
   { href: "/", label: "Início" },
+  { href: "/sobre-nos", label: "Sobre Nós" },
   { href: "/produtos", label: "Produtos" },
   { href: "/novidades", label: "Novidades" },
   { href: "/promocoes", label: "Promoções" },
-  { href: "/sobre-nos", label: "Sobre Nós" },
   { href: "/marcacoes", label: "Marcar Visita" },
 ];
 
