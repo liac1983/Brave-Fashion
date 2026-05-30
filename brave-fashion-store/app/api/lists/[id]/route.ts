@@ -20,9 +20,14 @@ export async function PATCH(req: Request, { params }: Params) {
   if (!list) return NextResponse.json({ error: 'Lista não encontrada' }, { status: 404 })
 
   if (action === 'add') {
+    // Remove primeiro para evitar duplicados, depois adiciona
     await writeClient
       .patch(id)
       .setIfMissing({ products: [] })
+      .unset([`products[_ref == "${productId}"]`])
+      .commit()
+    await writeClient
+      .patch(id)
       .append('products', [{ _type: 'reference', _ref: productId }])
       .commit()
   } else {

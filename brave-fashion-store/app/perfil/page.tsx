@@ -118,7 +118,9 @@ export default function PerfilPage() {
                   <p className="text-neutral-400">Lista vazia.</p>
                 ) : (
                   <div className="grid gap-x-10 gap-y-10 sm:grid-cols-2 xl:grid-cols-4">
-                    {list.products.map((product) => (
+                    {list.products
+                      .filter((p, i, arr) => arr.findIndex((x) => x._id === p._id) === i)
+                      .map((product) => (
                       <article key={product._id} className="group relative">
                         <button
                           type="button"
