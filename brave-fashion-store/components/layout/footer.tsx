@@ -121,7 +121,7 @@ export default function Footer() {
           <div className="space-y-3 text-[16px] text-neutral-500 md:text-[18px]">
             <p>918699920</p>
             <p>Rua D.João IV nº23 R/CH<br />4590-578 Paços de Ferreira</p>
-            <div className="pt-1">
+            <div className="pt-4">
               <p className="font-medium text-neutral-700">Horário</p>
               <p>Segunda a Sexta: 10h00 – 18h00</p>
               <p>Sábado: 10h00 – 13h00</p>
