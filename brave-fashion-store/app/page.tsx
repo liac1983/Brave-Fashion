@@ -3,6 +3,7 @@ import Image from "next/image";
 import { getCollections, getProducts } from "@/lib/sanity";
 import NewsletterForm from "@/components/newsletter-form";
 import HeroSection from "@/components/home/hero-section";
+import FadeIn from "@/components/ui/fade-in";
 
 export default async function HomePage() {
   const products = await getProducts(4);
@@ -38,14 +39,16 @@ export default async function HomePage() {
       <div className="bg-[#f7f2ec]">
         <div className="mx-auto max-w-7xl space-y-24 px-4 pb-24 pt-20">
           <section>
-            <div className="text-center pb-20">
-              <h2 className="font-serif text-4xl font-medium tracking-tight text-neutral-900 md:text-6xl">
-                Produtos em Destaque
-              </h2>
-              <p className="mx-auto mt-4 max-w-3xl text-lg text-neutral-500 md:text-2xl">
-                Seleção especial das nossas peças mais icónicas da temporada
-              </p>
-            </div>
+            <FadeIn>
+              <div className="text-center pb-20">
+                <h2 className="font-serif text-4xl font-medium tracking-tight text-neutral-900 md:text-6xl">
+                  Produtos em Destaque
+                </h2>
+                <p className="mx-auto mt-4 max-w-3xl text-lg text-neutral-500 md:text-2xl">
+                  Seleção especial das nossas peças mais icónicas da temporada
+                </p>
+              </div>
+            </FadeIn>
 
             <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {products.map((product) => (
@@ -106,12 +109,13 @@ export default async function HomePage() {
 
 
           <section className="mt-20 bg-[#f3ece7] py-16">
-
-            <div className="mb-20 text-center">
-              <h2 className="font-serif text-4xl font-medium tracking-tight text-neutral-900 md:text-6xl">
-                Coleções
-              </h2>
-            </div>
+            <FadeIn>
+              <div className="mb-20 text-center">
+                <h2 className="font-serif text-4xl font-medium tracking-tight text-neutral-900 md:text-6xl">
+                  Coleções
+                </h2>
+              </div>
+            </FadeIn>
 
             <div className="mt-20 grid gap-8 md:grid-cols-3"> 
 
@@ -164,6 +168,7 @@ export default async function HomePage() {
           <section className="py-20">
             <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
 
+              <FadeIn direction="left">
               <div>
                 <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#B76E2B]">
                   Atendimento Personalizado
@@ -190,7 +195,9 @@ export default async function HomePage() {
                   <span aria-hidden="true" style={{ fontSize: "20px" }}>→</span>
                 </Link>
               </div>
+              </FadeIn>
 
+              <FadeIn direction="right" delay={0.15}>
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                 {[
                   {
@@ -224,10 +231,12 @@ export default async function HomePage() {
                   </div>
                 ))}
               </div>
+              </FadeIn>
             </div>
           </section>
 
           <section>
+            <FadeIn>
             <div className="mb-10 mt-20 text-center">
               <h2 className="font-serif text-4xl font-medium tracking-tight text-neutral-900 md:text-6xl">
                 Segue a Brave Fashion
@@ -236,6 +245,7 @@ export default async function HomePage() {
                 Inspiração, novidades e looks nas redes sociais.
               </p>
             </div>
+            </FadeIn>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {instagramPosts.map((post) => (
