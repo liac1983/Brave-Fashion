@@ -33,18 +33,28 @@ export default function Footer() {
 
             <ul className="space-y-4 text-[16px] text-neutral-500 md:text-[18px]">
               <li>
-                <Link href="/colecao/novidades" className="transition hover:text-neutral-900">
+                <Link href="/produtos" className="transition hover:text-neutral-900">
+                  Produtos
+                </Link>
+              </li>
+              <li>
+                <Link href="/novidades" className="transition hover:text-neutral-900">
                   Novidades
                 </Link>
               </li>
               <li>
-                <Link href="/colecao/casual" className="transition hover:text-neutral-900">
-                  Casual
+                <Link href="/promocoes" className="transition hover:text-neutral-900">
+                  Promoções
                 </Link>
               </li>
               <li>
-                <Link href="/colecao/chic" className="transition hover:text-neutral-900">
-                  Chic
+                <Link href="/sobre-nos" className="transition hover:text-neutral-900">
+                  Sobre Nós
+                </Link>
+              </li>
+              <li>
+                <Link href="/marcacoes" className="transition hover:text-neutral-900">
+                  Marcar Visita
                 </Link>
               </li>
             </ul>
@@ -122,7 +132,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="mt-14 border-t border-[#e6d8cf] pt-10 text-center">
           <p className="text-[16px] text-neutral-500 md:text-[18px]">
-            © 2026 Brave Fashion Woman. Todos os direitos reservados.
+            © 2026 Brave Fashion By Paula Valente
           </p>
         </div>
       </div>

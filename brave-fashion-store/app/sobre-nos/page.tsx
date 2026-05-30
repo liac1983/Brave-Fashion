@@ -12,13 +12,13 @@ export default function SobreNosPage() {
     <div className="bg-[#f7f2ec]">
 
       {/* Hero */}
-      <section className="relative h-[60vh] w-full overflow-hidden">
+      <section className="relative h-screen w-full overflow-hidden">
         <Image
-          src="/hero.jpg"
+          src="/ChatGPT Image 30_05_2026, 16_22_21.png"
           alt="Brave Fashion"
           fill
           priority
-          className="object-cover object-[center_20%]"
+          className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative z-10 flex h-full items-center justify-center text-center px-6">
