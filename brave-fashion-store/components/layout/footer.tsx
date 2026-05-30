@@ -95,7 +95,7 @@ export default function Footer() {
 
               {/* Facebook */}
               <a
-                href="https://www.facebook.com/"
+                href="https://www.facebook.com/lojapaulavalente/?ref=NONE_xav_ig_profile_page_web"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Facebook"
@@ -118,14 +118,14 @@ export default function Footer() {
 
             </div>
           </div>
-          <div>
-            <p className="max-w-[320px] text-[16px] leading-relaxed text-neutral-500 md:text-[18px]">
-                918699920
-              </p>
-
-              <p className="max-w-[320px] text-[16px] leading-relaxed text-neutral-500 md:text-[18px]">
-                Rua D.João IV nº23 R/CH 4590-578 Paços de Ferreira
-              </p>
+          <div className="space-y-3 text-[16px] text-neutral-500 md:text-[18px]">
+            <p>918699920</p>
+            <p>Rua D.João IV nº23 R/CH<br />4590-578 Paços de Ferreira</p>
+            <div className="pt-1">
+              <p className="font-medium text-neutral-700">Horário</p>
+              <p>Segunda a Sexta: 10h00 – 18h00</p>
+              <p>Sábado: 10h00 – 13h00</p>
+            </div>
           </div>
         </div>
 

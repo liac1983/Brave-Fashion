@@ -62,8 +62,8 @@ export default function MarcacoesPage() {
                 </address>
                 <div className="mt-5 border-t border-[#e7d9cf] pt-5">
                   <h3 className="font-medium text-neutral-800 mb-2">Horário</h3>
-                  <p className="text-[17px] text-neutral-600">Segunda a Sábado</p>
-                  <p className="text-[17px] text-neutral-600">10h00 – 13h00 | 14h00 – 18h30</p>
+                  <p className="text-[17px] text-neutral-600">Segunda a Sexta: 10h00 – 18h00</p>
+                  <p className="text-[17px] text-neutral-600">Sábado: 10h00 – 13h00</p>
                 </div>
               </div>
 
