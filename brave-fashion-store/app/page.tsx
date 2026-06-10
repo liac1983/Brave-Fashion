@@ -1,13 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getCollections, getProducts } from "@/lib/sanity";
+import { getCollections, getProducts, getHomepage } from "@/lib/sanity";
 import NewsletterForm from "@/components/newsletter-form";
 import HeroSection from "@/components/home/hero-section";
 import FadeIn from "@/components/ui/fade-in";
 
 export default async function HomePage() {
-  const products = await getProducts(4);
-  const collections = await getCollections(6);
+  const [products, collections, homepage] = await Promise.all([
+    getProducts(4),
+    getCollections(6),
+    getHomepage(),
+  ]);
 
   const instagramPosts = [
     {
@@ -34,7 +37,11 @@ export default async function HomePage() {
   return (
     <>
 
-      <HeroSection />
+      <HeroSection
+        heroImage={homepage.heroImage}
+        heroTitle={homepage.heroTitle}
+        heroSubtitle={homepage.heroSubtitle}
+      />
 
       <div className="bg-[#f7f2ec]">
         <div className="mx-auto max-w-7xl space-y-24 px-4 pb-24 pt-20">

@@ -5,8 +5,9 @@ import {
   PRODUCTS_QUERY,
   PRODUCT_BY_HANDLE_QUERY,
   NEW_PRODUCTS_QUERY,
+  HOMEPAGE_QUERY,
 } from './queries'
-import type { Product, Collection } from './types'
+import type { Product, Collection, Homepage } from './types'
 
 function mapProduct(raw: any): Product {
   const allImages: Product['images']['edges'] = (raw.allImages ?? []).map(
@@ -78,4 +79,13 @@ export async function getCollectionByHandle(
 export async function getNewProducts(): Promise<Product[]> {
   const raw = await client.fetch(NEW_PRODUCTS_QUERY)
   return (raw ?? []).map(mapProduct)
+}
+
+export async function getHomepage(): Promise<Homepage> {
+  const raw = await client.fetch(HOMEPAGE_QUERY)
+  return {
+    heroImage: raw?.heroImage ?? null,
+    heroTitle: raw?.heroTitle ?? null,
+    heroSubtitle: raw?.heroSubtitle ?? null,
+  }
 }

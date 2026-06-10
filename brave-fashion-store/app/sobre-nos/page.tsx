@@ -18,7 +18,7 @@ export default function SobreNosPage() {
           alt="Brave Fashion"
           fill
           priority
-          className="object-cover object-center"
+          className="object-cover object-[center_25%] scale-[1]"
         />
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative z-10 flex h-full items-center justify-center text-center px-6">

@@ -75,3 +75,13 @@ export const NEW_PRODUCTS_QUERY = groq`
     ${productFields}
   }
 `
+
+export const HOMEPAGE_QUERY = groq`
+  *[_type == "homepage"][0] {
+    "heroImage": heroImage {
+      ${imageFields}
+    },
+    heroTitle,
+    heroSubtitle,
+  }
+`

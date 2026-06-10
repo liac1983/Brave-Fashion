@@ -39,3 +39,9 @@ export type Collection = {
     edges: Array<{ node: Product }>;
   };
 };
+
+export type Homepage = {
+  heroImage: SanityImage | null;
+  heroTitle: string | null;
+  heroSubtitle: string | null;
+};

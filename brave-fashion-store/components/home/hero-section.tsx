@@ -5,21 +5,32 @@ import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
-export default function HeroSection() {
+type HeroSectionProps = {
+  heroImage?: { url: string; altText?: string | null } | null;
+  heroTitle?: string | null;
+  heroSubtitle?: string | null;
+};
+
+export default function HeroSection({ heroImage, heroTitle, heroSubtitle }: HeroSectionProps) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+
+  const imageSrc = heroImage?.url ?? "/hero.jpg";
+  const imageAlt = heroImage?.altText ?? "Nova coleção Brave Fashion";
+  const title = heroTitle ?? "Nova Coleção";
+  const subtitle = heroSubtitle ?? "O estilo é criar a própria moda — a diferença está nos pormenores.";
 
   return (
     <section ref={ref} className="relative h-screen w-full overflow-hidden">
       <motion.div className="absolute inset-0" style={{ y }}>
         <Image
-          src="/hero.jpg"
-          alt="Nova coleção Brave Fashion"
+          src={imageSrc}
+          alt={imageAlt}
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[center_25%] scale-[1.15]"
+          className="object-cover object-[center_25%] scale-[1]"
         />
         <div className="absolute inset-0 bg-black/30" />
       </motion.div>
@@ -32,7 +43,7 @@ export default function HeroSection() {
             transition={{ duration: 0.9, ease: "easeOut" }}
             className="font-serif text-5xl font-medium tracking-tight text-white md:text-7xl"
           >
-            Nova Coleção
+            {title}
           </motion.h1>
 
           <motion.p
@@ -41,7 +52,7 @@ export default function HeroSection() {
             transition={{ duration: 0.9, delay: 0.2, ease: "easeOut" }}
             className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-white md:text-2xl"
           >
-            O estilo é criar a própria moda — a diferença está nos pormenores.
+            {subtitle}
           </motion.p>
 
           <motion.div
