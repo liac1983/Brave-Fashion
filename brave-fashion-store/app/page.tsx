@@ -58,7 +58,12 @@ export default async function HomePage() {
             </FadeIn>
 
             <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {products.map((product) => (
+              {products.map((product) => {
+                const gallery = product.images?.edges?.map((e) => e.node) ?? [];
+                const hoverImage =
+                  gallery.find((img) => img.url !== product.featuredImage?.url) ??
+                  null;
+                return (
                 <Link
                   key={product.id}
                   href={`/produtos/${product.handle}`}
@@ -66,13 +71,26 @@ export default async function HomePage() {
                 >
                   <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-white">
                     {product.featuredImage ? (
-                      <Image
-                        src={product.featuredImage.url}
-                        alt={product.featuredImage.altText || product.title}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                        className="object-cover transition duration-500 group-hover:scale-105"
-                      />
+                      <>
+                        <Image
+                          src={product.featuredImage.url}
+                          alt={product.featuredImage.altText || product.title}
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          className={`object-cover transition duration-700 group-hover:scale-105 ${
+                            hoverImage ? "group-hover:opacity-0" : ""
+                          }`}
+                        />
+                        {hoverImage && (
+                          <Image
+                            src={hoverImage.url}
+                            alt={hoverImage.altText || product.title}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                            className="object-cover opacity-0 transition duration-700 group-hover:scale-105 group-hover:opacity-100"
+                          />
+                        )}
+                      </>
                     ) : (
                       <div className="flex h-full items-center justify-center text-neutral-400">
                         Sem imagem
@@ -89,7 +107,8 @@ export default async function HomePage() {
                     </p>
                   </div>
                 </Link>
-              ))}
+                );
+              })}
             </div>
 
             <div className="mt-16 flex justify-center ">

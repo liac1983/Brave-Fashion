@@ -1,9 +1,23 @@
 import type { Metadata } from "next";
+import { Inter, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import { FavoritesProvider } from "@/components/favorites/favorites-provider";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-cormorant",
+  display: "swap",
+});
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://bravefashionbypaulavalente.com";
@@ -56,8 +70,8 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="pt">
-        <body className="min-h-screen bg-white text-black">
+      <html lang="pt" className={`${inter.variable} ${cormorant.variable}`}>
+        <body className="min-h-screen bg-white font-sans text-black">
           <FavoritesProvider>
             <Header />
             <main>{children}</main>

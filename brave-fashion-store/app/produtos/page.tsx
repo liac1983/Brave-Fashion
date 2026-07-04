@@ -113,16 +113,23 @@ export default async function ProdutosPage({ searchParams }: ProdutosPageProps) 
           <div>
             {sortedProducts.length > 0 ? (
               <div className="grid gap-x-10 gap-y-14 sm:grid-cols-2 xl:grid-cols-3">
-                {sortedProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    title={product.title}
-                    handle={product.handle}
-                    image={product.featuredImage}
-                    price={`€${Number(product.priceRange.minVariantPrice.amount).toFixed(2)}`}
-                  />
-                ))}
+                {sortedProducts.map((product) => {
+                  const gallery = product.images?.edges?.map((e) => e.node) ?? [];
+                  const hoverImage =
+                    gallery.find((img) => img.url !== product.featuredImage?.url) ??
+                    null;
+                  return (
+                    <ProductCard
+                      key={product.id}
+                      id={product.id}
+                      title={product.title}
+                      handle={product.handle}
+                      image={product.featuredImage}
+                      hoverImage={hoverImage}
+                      price={`€${Number(product.priceRange.minVariantPrice.amount).toFixed(2)}`}
+                    />
+                  );
+                })}
               </div>
             ) : (
               <p className="text-xl text-neutral-500">

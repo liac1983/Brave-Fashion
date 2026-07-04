@@ -2,6 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import HeartButton from "@/components/favorites/heart-button";
 
+type ProductImage = {
+  url: string;
+  altText: string | null;
+};
+
 type ProductCardProps = {
   id: string;
   title: string;
@@ -9,10 +14,8 @@ type ProductCardProps = {
   price?: string;
   compareAtPrice?: string;
   badge?: string;
-  image?: {
-    url: string;
-    altText: string | null;
-  } | null;
+  image?: ProductImage | null;
+  hoverImage?: ProductImage | null;
 };
 
 export default function ProductCard({
@@ -23,6 +26,7 @@ export default function ProductCard({
   compareAtPrice,
   badge,
   image,
+  hoverImage,
 }: ProductCardProps) {
   return (
     <article className="group relative">
@@ -35,13 +39,26 @@ export default function ProductCard({
       <Link href={`/produtos/${handle}`} className="block">
         <div className="relative aspect-[3/4] overflow-hidden rounded-[6px] bg-white">
           {image ? (
-            <Image
-              src={image.url}
-              alt={image.altText || title}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-              className="object-cover transition duration-500 group-hover:scale-105"
-            />
+            <>
+              <Image
+                src={image.url}
+                alt={image.altText || title}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                className={`object-cover transition duration-700 group-hover:scale-105 ${
+                  hoverImage ? "group-hover:opacity-0" : ""
+                }`}
+              />
+              {hoverImage && (
+                <Image
+                  src={hoverImage.url}
+                  alt={hoverImage.altText || title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                  className="object-cover opacity-0 transition duration-700 group-hover:scale-105 group-hover:opacity-100"
+                />
+              )}
+            </>
           ) : (
             <div className="flex h-full w-full items-center justify-center text-neutral-400">
               Sem imagem
