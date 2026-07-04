@@ -13,7 +13,7 @@ export default async function CollectionPage({
 }: CollectionPageProps) {
   const { handle } = await params;
 
-  const collection = await getCollectionByHandle(handle, 24);
+  const collection = await getCollectionByHandle(handle);
 
   if (!collection) {
     notFound();

@@ -33,6 +33,16 @@ export default function Footer() {
 
             <ul className="space-y-4 text-[16px] text-neutral-500 md:text-[18px]">
               <li>
+                <Link href="/" className="transition hover:text-neutral-900">
+                  Início
+                </Link>
+              </li>
+              <li>
+                <Link href="/sobre-nos" className="transition hover:text-neutral-900">
+                  Sobre Nós
+                </Link>
+              </li>
+              <li>
                 <Link href="/produtos" className="transition hover:text-neutral-900">
                   Produtos
                 </Link>
@@ -45,11 +55,6 @@ export default function Footer() {
               <li>
                 <Link href="/promocoes" className="transition hover:text-neutral-900">
                   Promoções
-                </Link>
-              </li>
-              <li>
-                <Link href="/sobre-nos" className="transition hover:text-neutral-900">
-                  Sobre Nós
                 </Link>
               </li>
               <li>
