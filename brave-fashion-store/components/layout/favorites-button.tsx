@@ -4,14 +4,18 @@ import Link from "next/link";
 import { Heart } from "lucide-react";
 import { useFavorites } from "@/components/favorites/favorites-provider";
 
-export default function FavoritesButton() {
+export default function FavoritesButton({ light = false }: { light?: boolean }) {
   const { count } = useFavorites();
 
   return (
     <Link
       href="/favoritos"
       aria-label="Ver favoritos"
-      className="relative flex h-10 w-10 items-center justify-center rounded-full text-neutral-800 transition hover:bg-black/5"
+      className={`relative flex h-10 w-10 items-center justify-center rounded-full transition ${
+        light
+          ? "text-white hover:bg-white/10"
+          : "text-neutral-800 hover:bg-black/5"
+      }`}
     >
       <Heart size={22} strokeWidth={1.8} />
       {count > 0 && (

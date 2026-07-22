@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Logo from "./logo";
 import MainNav from "./main-nav";
@@ -19,32 +20,57 @@ const mobileLinks = [
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { isSignedIn, isLoaded } = useUser();
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Transparente só na homepage e enquanto o menu mobile está fechado
+  const transparent = isHome && !scrolled && !isOpen;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#e9dfd3] bg-[#f7f2ec]/95 backdrop-blur">
+    <header
+      className={`top-0 z-50 transition-colors duration-300 ${
+        isHome ? "fixed inset-x-0" : "sticky"
+      } ${
+        transparent
+          ? "border-b border-transparent bg-transparent"
+          : "border-b border-[#e9dfd3] bg-[#f7f2ec]/95 backdrop-blur"
+      }`}
+    >
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-3">
           <div className="block md:hidden">
             <button
               type="button"
               onClick={() => setIsOpen(!isOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-neutral-800 transition hover:bg-black/5"
+              className={`flex h-10 w-10 items-center justify-center rounded-full transition ${
+                transparent
+                  ? "text-white hover:bg-white/10"
+                  : "text-neutral-800 hover:bg-black/5"
+              }`}
               aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
             >
               <Menu className="h-6 w-6" strokeWidth={1.8} />
             </button>
           </div>
 
-          <Logo />
+          <Logo light={transparent} />
         </div>
 
         <div className="hidden md:block">
-          <MainNav />
+          <MainNav light={transparent} />
         </div>
 
         <div className="flex items-center gap-3">
-          <FavoritesButton />
+          <FavoritesButton light={transparent} />
           {isLoaded && (
             isSignedIn ? (
               <UserButton>
@@ -58,7 +84,13 @@ export default function Header() {
               </UserButton>
             ) : (
               <SignInButton mode="modal">
-                <button className="rounded-[6px] border border-[#e7d9cf] px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-[#B76E2B] hover:text-[#B76E2B]">
+                <button
+                  className={`rounded-[6px] border px-4 py-2 text-sm font-medium transition ${
+                    transparent
+                      ? "border-white/70 text-white hover:border-white hover:bg-white/10"
+                      : "border-[#e7d9cf] text-neutral-700 hover:border-[#B76E2B] hover:text-[#B76E2B]"
+                  }`}
+                >
                   Entrar
                 </button>
               </SignInButton>
@@ -95,4 +127,3 @@ export default function Header() {
     </header>
   );
 }
-

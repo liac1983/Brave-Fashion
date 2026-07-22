@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import { FavoritesProvider } from "@/components/favorites/favorites-provider";
+import SmoothScroll from "@/components/smooth-scroll";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -73,9 +74,11 @@ export default function RootLayout({
       <html lang="pt" className={`${inter.variable} ${cormorant.variable}`}>
         <body className="min-h-screen bg-white font-sans text-black">
           <FavoritesProvider>
-            <Header />
-            <main>{children}</main>
-            <Footer />
+            <SmoothScroll>
+              <Header />
+              <main>{children}</main>
+              <Footer />
+            </SmoothScroll>
           </FavoritesProvider>
         </body>
       </html>
