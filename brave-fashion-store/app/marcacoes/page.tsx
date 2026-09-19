@@ -41,7 +41,7 @@ export default function MarcacoesPage() {
                   </li>
                   <li className="flex gap-3">
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#B76E2B] text-sm text-white font-medium">2</span>
-                    <span>É redirecionada para o WhatsApp com a mensagem já preparada</span>
+                    <span>Envia o pedido por WhatsApp ou por email, com a mensagem já preparada</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#B76E2B] text-sm text-white font-medium">3</span>
