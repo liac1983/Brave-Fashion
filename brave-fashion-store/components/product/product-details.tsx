@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product, SanityImage } from "@/lib/sanity/types";
 import WhatsAppButton from "@/components/product/whatsapp-button";
+import BuyButton from "@/components/product/buy-button";
 import HeartButton from "@/components/favorites/heart-button";
 import AddToListButton from "@/components/favorites/add-to-list-button";
 
@@ -132,7 +133,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           €{Number(product.priceRange.minVariantPrice.amount).toFixed(2)}
         </p>
 
-        <WhatsAppButton productTitle={product.title} productHandle={product.handle} />
+        {product.linkPagamento ? (
+          <BuyButton linkPagamento={product.linkPagamento} />
+        ) : (
+          <WhatsAppButton productTitle={product.title} productHandle={product.handle} />
+        )}
         <AddToListButton productId={product.id} />
 
         <div className="mt-10 border-b border-[#e7d9cf] pb-10">

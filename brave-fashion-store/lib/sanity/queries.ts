@@ -17,6 +17,7 @@ const productFields = groq`
   isNew,
   available,
   originalPrice,
+  linkPagamento,
   "featuredImage": images[0] {
     ${imageFields}
   },
