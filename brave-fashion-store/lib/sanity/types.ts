@@ -46,3 +46,12 @@ export type Homepage = {
   heroTitle: string | null;
   heroSubtitle: string | null;
 };
+
+export type LegalPage = {
+  title: string;
+  intro: string | null;
+  /** Portable Text do Sanity. */
+  content: unknown[];
+  lastUpdated: string | null;
+  reviewed: boolean;
+};

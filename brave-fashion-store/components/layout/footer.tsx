@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-[#e6d8cf] bg-[#f3ece7]">
       <div className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid gap-12 md:grid-cols-4">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
           
           {/* Logo + descrição */}
           <div>
@@ -65,7 +65,42 @@ export default function Footer() {
             </ul>
           </div>
 
-{/* Redes sociais */}
+{/* Informações */}
+          <div>
+            <h3 className="mb-8 font-serif text-[20px] text-neutral-900">
+              Informações
+            </h3>
+
+            <ul className="space-y-4 text-[16px] text-neutral-500 md:text-[18px]">
+              <li>
+                <Link href="/termos-e-condicoes" className="transition hover:text-neutral-900">
+                  Termos e Condições
+                </Link>
+              </li>
+              <li>
+                <Link href="/devolucoes" className="transition hover:text-neutral-900">
+                  Devoluções e Trocas
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacidade" className="transition hover:text-neutral-900">
+                  Privacidade
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="https://www.livroreclamacoes.pt"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="transition hover:text-neutral-900"
+                >
+                  Livro de Reclamações
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Redes sociais */}
           <div>
             <h3 className="mb-8 font-serif text-[20px] text-neutral-900">
               Siga-nos

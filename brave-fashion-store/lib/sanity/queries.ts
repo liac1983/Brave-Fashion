@@ -86,3 +86,13 @@ export const HOMEPAGE_QUERY = groq`
     heroSubtitle,
   }
 `
+
+export const LEGAL_PAGE_QUERY = groq`
+  *[_type == "legalPage" && slug.current == $slug][0] {
+    title,
+    intro,
+    content,
+    lastUpdated,
+    reviewed
+  }
+`

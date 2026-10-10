@@ -6,8 +6,9 @@ import {
   PRODUCT_BY_HANDLE_QUERY,
   NEW_PRODUCTS_QUERY,
   HOMEPAGE_QUERY,
+  LEGAL_PAGE_QUERY,
 } from './queries'
-import type { Product, Collection, Homepage } from './types'
+import type { Product, Collection, Homepage, LegalPage } from './types'
 
 function mapProduct(raw: any): Product {
   const allImages: Product['images']['edges'] = (raw.allImages ?? []).map(
@@ -88,5 +89,18 @@ export async function getHomepage(): Promise<Homepage> {
     heroImage: raw?.heroImage ?? null,
     heroTitle: raw?.heroTitle ?? null,
     heroSubtitle: raw?.heroSubtitle ?? null,
+  }
+}
+
+export async function getLegalPage(slug: string): Promise<LegalPage | null> {
+  const raw = await client.fetch(LEGAL_PAGE_QUERY, { slug })
+  if (!raw) return null
+
+  return {
+    title: raw.title,
+    intro: raw.intro ?? null,
+    content: raw.content ?? [],
+    lastUpdated: raw.lastUpdated ?? null,
+    reviewed: raw.reviewed ?? false,
   }
 }
