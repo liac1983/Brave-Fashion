@@ -25,6 +25,21 @@ export const product = defineType({
       validation: (Rule) => Rule.required().min(0),
     }),
     defineField({
+      name: 'linkPagamento',
+      title: 'Link de pagamento (Stripe)',
+      type: 'url',
+      description:
+        'Cola aqui o Payment Link do Stripe para esta peça ficar à venda online. ' +
+        'Deixa vazio e o produto mantém o botão de WhatsApp. ' +
+        'Quando a peça for vendida, apaga o link para a retirares da venda.',
+      validation: (Rule) =>
+        Rule.uri({ scheme: ['https'] }).custom((value) =>
+          !value || String(value).includes('stripe.com')
+            ? true
+            : 'O link deve ser um Payment Link do Stripe (buy.stripe.com).'
+        ),
+    }),
+    defineField({
       name: 'description',
       title: 'Descrição',
       type: 'text',
@@ -58,21 +73,6 @@ export const product = defineType({
       title: 'Disponível',
       type: 'boolean',
       initialValue: true,
-    }),
-    defineField({
-      name: 'linkPagamento',
-      title: 'Link de pagamento (Stripe)',
-      type: 'url',
-      description:
-        'Cola aqui o Payment Link do Stripe para esta peça ficar à venda online. ' +
-        'Deixa vazio e o produto mantém o botão de WhatsApp. ' +
-        'Quando a peça for vendida, apaga o link para a retirares da venda.',
-      validation: (Rule) =>
-        Rule.uri({ scheme: ['https'] }).custom((value) =>
-          !value || String(value).includes('stripe.com')
-            ? true
-            : 'O link deve ser um Payment Link do Stripe (buy.stripe.com).'
-        ),
     }),
   ],
   preview: {
