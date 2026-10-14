@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ShoppingBag } from "lucide-react";
 import HeartButton from "@/components/favorites/heart-button";
 
 type ProductImage = {
@@ -16,6 +17,8 @@ type ProductCardProps = {
   badge?: string;
   image?: ProductImage | null;
   hoverImage?: ProductImage | null;
+  /** Peça com link de pagamento: pode ser comprada sem passar pelo WhatsApp. */
+  buyable?: boolean;
 };
 
 export default function ProductCard({
@@ -27,6 +30,7 @@ export default function ProductCard({
   badge,
   image,
   hoverImage,
+  buyable = false,
 }: ProductCardProps) {
   return (
     <article className="group relative">
@@ -86,6 +90,13 @@ export default function ProductCard({
               <p className="text-[18px] text-neutral-400 line-through">{compareAtPrice}</p>
             )}
           </div>
+        )}
+
+        {buyable && (
+          <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#f0e3d5] px-3 py-1 text-[14px] text-[#8a4e16]">
+            <ShoppingBag size={14} strokeWidth={1.9} />
+            Comprar online
+          </p>
         )}
       </div>
     </article>

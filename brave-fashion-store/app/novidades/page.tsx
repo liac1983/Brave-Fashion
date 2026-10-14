@@ -30,6 +30,7 @@ export default async function NovidadesPage() {
                 handle={product.handle}
                 image={product.featuredImage}
                 price={`€${Number(product.priceRange.minVariantPrice.amount).toFixed(2)}`}
+                buyable={Boolean(product.linkPagamento)}
                 badge="Novidade"
               />
             ))}

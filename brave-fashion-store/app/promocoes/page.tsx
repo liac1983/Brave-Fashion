@@ -1,3 +1,4 @@
+import Link from "next/link";
 import ProductCard from "@/components/product/product-card";
 import { getProducts } from "@/lib/sanity";
 
@@ -42,14 +43,35 @@ export default async function PromocoesPage() {
                   price={`€${price.toFixed(2)}`}
                   compareAtPrice={`€${originalPrice.toFixed(2)}`}
                   badge={discountPercentage ? `-${discountPercentage}%` : "Promoção"}
+                  buyable={Boolean(product.linkPagamento)}
                 />
               );
             })}
           </div>
         ) : (
-          <p className="text-xl text-neutral-500">
-            Neste momento não existem produtos em promoção.
-          </p>
+          <div className="rounded-[6px] border border-[#e7d9cf] bg-white p-10">
+            <p className="text-xl text-neutral-600">
+              Neste momento não há peças em promoção.
+            </p>
+            <p className="mt-3 text-[17px] text-neutral-500">
+              As promoções mudam ao longo da estação. Entretanto, veja a coleção completa
+              ou fale connosco para saber o que está a chegar.
+            </p>
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+              <Link
+                href="/produtos"
+                className="flex items-center justify-center rounded-[6px] bg-[#B76E2B] px-8 py-4 text-[18px] font-medium text-white transition hover:bg-[#9d5e24]"
+              >
+                Ver todas as peças
+              </Link>
+              <Link
+                href="/novidades"
+                className="flex items-center justify-center rounded-[6px] border border-[#B76E2B] bg-white px-8 py-4 text-[18px] font-medium text-[#B76E2B] transition hover:bg-[#f3e7dc]"
+              >
+                Novidades
+              </Link>
+            </div>
+          </div>
         )}
       </div>
     </section>

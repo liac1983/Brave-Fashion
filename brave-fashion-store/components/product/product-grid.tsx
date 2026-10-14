@@ -19,6 +19,7 @@ type Product = {
       currencyCode: string;
     };
   };
+  linkPagamento?: string | null;
 };
 
 type ProductGridProps = {
@@ -41,6 +42,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
             image={product.featuredImage}
             hoverImage={hoverImage}
             price={`€${Number(product.priceRange.minVariantPrice.amount).toFixed(2)}`}
+            buyable={Boolean(product.linkPagamento)}
           />
         );
       })}
