@@ -20,7 +20,7 @@ export const structure: StructureResolver = (S) =>
         .child(
           S.documentList()
             .title('À venda online')
-            .filter('_type == "product" && defined(linkPagamento)')
+            .filter('_type == "product" && venderOnline == true')
             .defaultOrdering([{ field: 'title', direction: 'asc' }])
         ),
 

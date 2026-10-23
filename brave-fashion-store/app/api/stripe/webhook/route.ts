@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { writeClient } from "@/sanity/lib/writeClient";
 
 /**
  * Recebe os pagamentos do Stripe e avisa a loja por email.
@@ -91,6 +92,19 @@ export async function POST(request: Request) {
     return new Response("Email não configurado.", { status: 500 });
   }
 
+  // A peça é única: assim que é paga, sai do site. Antes do email, porque é
+  // pior vender duas vezes do que ficar sem aviso de uma venda.
+  const productId = session.metadata?.productId;
+
+  if (productId) {
+    try {
+      await writeClient.patch(productId).set({ available: false, venderOnline: false }).commit();
+      console.info("[stripe] peça marcada como vendida:", productId);
+    } catch (error) {
+      console.error("[stripe] não foi possível marcar a peça como vendida:", error);
+    }
+  }
+
   let artigos: string[] = [];
 
   try {
@@ -119,6 +133,7 @@ export async function POST(request: Request) {
     ["Portes", eur(session.total_details?.amount_shipping)],
     ["Total pago", eur(session.amount_total)],
     ["Referência Stripe", session.id],
+    ["Peça no site", productId ? "marcada como vendida e retirada do site" : ""],
   ];
 
   const preenchidos = campos.filter(([, valor]) => valor);

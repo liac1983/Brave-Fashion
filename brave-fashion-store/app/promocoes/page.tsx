@@ -43,7 +43,7 @@ export default async function PromocoesPage() {
                   price={`€${price.toFixed(2)}`}
                   compareAtPrice={`€${originalPrice.toFixed(2)}`}
                   badge={discountPercentage ? `-${discountPercentage}%` : "Promoção"}
-                  buyable={Boolean(product.linkPagamento)}
+                  buyable={Boolean(product.venderOnline)}
                 />
               );
             })}

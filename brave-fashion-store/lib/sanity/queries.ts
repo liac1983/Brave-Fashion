@@ -17,7 +17,7 @@ const productFields = groq`
   isNew,
   available,
   originalPrice,
-  linkPagamento,
+  venderOnline,
   "featuredImage": images[0] {
     ${imageFields}
   },

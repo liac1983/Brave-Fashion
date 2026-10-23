@@ -14,7 +14,7 @@ export type Product = {
   isNew: boolean;
   available: boolean;
   originalPrice: number | null;
-  linkPagamento: string | null;
+  venderOnline: boolean;
   featuredImage: SanityImage | null;
   images: {
     edges: Array<{ node: SanityImage }>;

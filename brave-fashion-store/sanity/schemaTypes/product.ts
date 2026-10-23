@@ -25,19 +25,14 @@ export const product = defineType({
       validation: (Rule) => Rule.required().min(0),
     }),
     defineField({
-      name: 'linkPagamento',
-      title: 'Link de pagamento (Stripe)',
-      type: 'url',
+      name: 'venderOnline',
+      title: 'À venda online',
+      type: 'boolean',
+      initialValue: false,
       description:
-        'Cola aqui o Payment Link do Stripe para esta peça ficar à venda online. ' +
-        'Deixa vazio e o produto mantém o botão de WhatsApp. ' +
-        'Quando a peça for vendida, apaga o link para a retirares da venda.',
-      validation: (Rule) =>
-        Rule.uri({ scheme: ['https'] }).custom((value) =>
-          !value || String(value).includes('stripe.com')
-            ? true
-            : 'O link deve ser um Payment Link do Stripe (buy.stripe.com).'
-        ),
+        'Liga para esta peça poder ser comprada e paga no site. ' +
+        'Desligado, a peça continua a mostrar o botão de WhatsApp. ' +
+        'Quando a peça for vendida, o site desliga isto sozinho.',
     }),
     defineField({
       name: 'description',

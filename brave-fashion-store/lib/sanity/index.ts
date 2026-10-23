@@ -24,7 +24,7 @@ function mapProduct(raw: any): Product {
     isNew: raw.isNew ?? false,
     available: raw.available ?? true,
     originalPrice: raw.originalPrice ?? null,
-    linkPagamento: raw.linkPagamento ?? null,
+    venderOnline: raw.venderOnline ?? false,
     featuredImage: raw.featuredImage ?? null,
     images: { edges: allImages },
     priceRange: {

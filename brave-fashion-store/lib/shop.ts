@@ -9,7 +9,14 @@
 export const SHIPPING = {
   /** Portes para Portugal Continental, em euros. */
   cost: 4.5,
-  /** Acima deste valor de encomenda, os portes são grátis. */
+  /** Açores e Madeira. Os CTT cobram 5,69–6,97 € mais taxa de energia. */
+  islands: 9.9,
+  /** Restantes países da União Europeia. */
+  europe: 19.9,
+  /**
+   * Acima deste valor os portes são grátis — mas **só no continente**.
+   * Oferecer portes para as ilhas comeria a margem da peça.
+   */
   freeFrom: 100,
   /** Levantamento na loja, em Paços de Ferreira. */
   pickupAvailable: true,
@@ -25,8 +32,9 @@ export function formatEur(amount: number) {
 /** Linha resumida dos portes, para mostrar junto ao botão de compra. */
 export function shippingSummary() {
   const parts = [
-    `Portes ${formatEur(SHIPPING.cost)}`,
+    `Portes ${formatEur(SHIPPING.cost)} no continente`,
     `grátis acima de ${formatEur(SHIPPING.freeFrom)}`,
+    `ilhas ${formatEur(SHIPPING.islands)}`,
   ];
 
   if (SHIPPING.pickupAvailable) {

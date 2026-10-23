@@ -133,8 +133,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           €{Number(product.priceRange.minVariantPrice.amount).toFixed(2)}
         </p>
 
-        {product.linkPagamento ? (
-          <BuyButton linkPagamento={product.linkPagamento} />
+        {product.venderOnline && product.available ? (
+          <BuyButton handle={product.handle} />
         ) : (
           <WhatsAppButton productTitle={product.title} productHandle={product.handle} />
         )}
