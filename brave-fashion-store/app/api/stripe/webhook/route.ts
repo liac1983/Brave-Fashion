@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { writeClient } from "@/sanity/lib/writeClient";
+import { getStripeSecretKey } from "@/lib/stripe";
 
 /**
  * Recebe os pagamentos do Stripe e avisa a loja por email.
@@ -45,15 +46,20 @@ function formatAddress(address: Stripe.Address | null | undefined) {
 }
 
 export async function POST(request: Request) {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const chave = getStripeSecretKey();
 
-  if (!secretKey || !webhookSecret) {
-    console.error("[stripe] STRIPE_SECRET_KEY ou STRIPE_WEBHOOK_SECRET em falta");
+  if ("erro" in chave) {
+    console.error("[stripe]", chave.erro);
     return new Response("Stripe não configurado.", { status: 500 });
   }
 
-  const stripe = new Stripe(secretKey);
+  if (!webhookSecret) {
+    console.error("[stripe] STRIPE_WEBHOOK_SECRET em falta");
+    return new Response("Stripe não configurado.", { status: 500 });
+  }
+
+  const stripe = new Stripe(chave.key);
   const signature = request.headers.get("stripe-signature");
 
   if (!signature) {

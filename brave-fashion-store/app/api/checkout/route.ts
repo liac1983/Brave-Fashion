@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { client } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
 import { SHIPPING } from "@/lib/shop";
+import { getStripeSecretKey } from "@/lib/stripe";
 
 /**
  * Cria a sessão de pagamento no momento em que a cliente clica em Comprar.
@@ -77,13 +78,15 @@ function opcoesDeEnvio(precoPeca: number): Stripe.Checkout.SessionCreateParams.S
 }
 
 export async function POST(request: Request) {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const chave = getStripeSecretKey();
 
-  if (!secretKey) {
-    console.error("[checkout] STRIPE_SECRET_KEY em falta");
+  if ("erro" in chave) {
+    console.error("[checkout]", chave.erro);
     return Response.json({ error: "Pagamentos não estão configurados." }, { status: 500 });
   }
+
+  const secretKey = chave.key;
 
   let handle: string;
 
