@@ -2,6 +2,13 @@ import Link from "next/link";
 import ProductCard from "@/components/product/product-card";
 import { getProducts } from "@/lib/sanity";
 
+export const metadata = {
+  title: "Promoções",
+  description:
+    "Peças selecionadas com preço reduzido na Brave Fashion by Paula Valente. Stock limitado — cada peça é única.",
+};
+
+
 function getDiscountPercentage(price: number, originalPrice: number) {
   if (originalPrice <= price) return null;
   return Math.round(((originalPrice - price) / originalPrice) * 100);

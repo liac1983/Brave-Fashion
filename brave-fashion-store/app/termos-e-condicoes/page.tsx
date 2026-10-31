@@ -4,7 +4,7 @@ import LegalPageView from "@/components/legal/legal-page-view";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Termos e Condições | Brave Fashion by Paula Valente",
+  title: "Termos e Condições",
   description: "Condições de venda da loja online da Brave Fashion.",
 };
 

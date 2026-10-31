@@ -3,6 +3,13 @@ import { getProducts } from "@/lib/sanity";
 import ProductCard from "@/components/product/product-card";
 import ProductsSortSelect from "@/components/product/products-sort-select";
 
+export const metadata = {
+  title: "A Nossa Coleção",
+  description:
+    "Vestidos, casacos, malhas e gabardinas selecionados pela Paula Valente. Loja em Paços de Ferreira, com compra online e entrega em todo o país.",
+};
+
+
 type ProdutosPageProps = {
   searchParams?: Promise<{
     categoria?: string;

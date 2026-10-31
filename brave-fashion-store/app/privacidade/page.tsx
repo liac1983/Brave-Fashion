@@ -4,7 +4,7 @@ import LegalPageView from "@/components/legal/legal-page-view";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Política de Privacidade | Brave Fashion by Paula Valente",
+  title: "Política de Privacidade",
   description: "Como a Brave Fashion trata os dados pessoais das suas clientes.",
 };
 

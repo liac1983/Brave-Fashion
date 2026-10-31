@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { FavoritesProvider } from "@/components/favorites/favorites-provider";
 import SiteShell from "@/components/layout/site-shell";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -73,6 +74,12 @@ export default function RootLayout({
         <body className="min-h-screen bg-white font-sans text-black">
           <FavoritesProvider>
             <SiteShell>{children}</SiteShell>
+            {/*
+              Medição de audiência sem cookies e sem identificar quem visita.
+              Está descrita no ponto 6 da Política de Privacidade — se um dia
+              for substituída por outra ferramenta, esse texto tem de mudar.
+            */}
+            <Analytics />
           </FavoritesProvider>
         </body>
       </html>

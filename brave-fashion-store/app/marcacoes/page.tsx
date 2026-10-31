@@ -2,7 +2,7 @@ import BookingForm from "@/components/marcacoes/booking-form";
 import { Calendar } from "lucide-react";
 
 export const metadata = {
-  title: "Marcações | Brave Fashion by Paula Valente",
+  title: "Marcar Visita",
   description: "Marque uma visita à Brave Fashion e receba ajuda personalizada para escolher o seu outfit.",
 };
 

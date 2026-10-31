@@ -2,6 +2,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { getCollections } from "@/lib/sanity";
 
+export const metadata = {
+  title: "Coleções",
+  description:
+    "As coleções da Brave Fashion by Paula Valente, reunidas por estilo e ocasião.",
+};
+
+
 export default async function ColecoesPage() {
   const collections = await getCollections(12);
 

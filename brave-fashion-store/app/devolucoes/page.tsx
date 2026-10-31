@@ -4,7 +4,7 @@ import LegalPageView from "@/components/legal/legal-page-view";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Devoluções e Trocas | Brave Fashion by Paula Valente",
+  title: "Devoluções e Trocas",
   description: "Como devolver ou trocar uma peça comprada em bravefashionbypaulavalente.com.",
 };
 

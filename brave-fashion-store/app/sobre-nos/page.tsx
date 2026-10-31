@@ -3,7 +3,7 @@ import Link from "next/link";
 import FadeIn from "@/components/ui/fade-in";
 
 export const metadata = {
-  title: "Sobre Nós | Brave Fashion by Paula Valente",
+  title: "Sobre Nós",
   description: "Conheça a história da Brave Fashion e a sua fundadora, Paula Valente.",
 };
 

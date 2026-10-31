@@ -1,6 +1,13 @@
 import { getNewProducts } from "@/lib/sanity";
 import ProductCard from "@/components/product/product-card";
 
+export const metadata = {
+  title: "Novidades",
+  description:
+    "As últimas peças a chegar à Brave Fashion. Moda feminina elegante, escolhida peça a peça em Paços de Ferreira.",
+};
+
+
 export default async function NovidadesPage() {
   const products = await getNewProducts();
 
