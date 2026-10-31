@@ -25,6 +25,13 @@ export const product = defineType({
       validation: (Rule) => Rule.required().min(0),
     }),
     defineField({
+      name: 'originalPrice',
+      title: 'Preço Original (antes da promoção)',
+      type: 'number',
+      description:
+        'O preço antigo, mais alto. Preenche isto e baixa o Preço acima — o site calcula a percentagem, risca o valor antigo e põe a peça nas Promoções. Para acabar a promoção, apaga este campo.',
+    }),
+    defineField({
       name: 'venderOnline',
       title: 'À venda online',
       type: 'boolean',
@@ -50,12 +57,6 @@ export const product = defineType({
       name: 'category',
       title: 'Categoria',
       type: 'string',
-    }),
-    defineField({
-      name: 'originalPrice',
-      title: 'Preço Original (antes da promoção)',
-      type: 'number',
-      description: 'Preenche só se o produto estiver em promoção',
     }),
     defineField({
       name: 'isNew',
