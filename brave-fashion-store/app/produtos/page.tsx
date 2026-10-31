@@ -75,17 +75,17 @@ export default async function ProdutosPage({ searchParams }: ProdutosPageProps) 
                   Categoria
                 </h3>
 
-                <div className="mt-6 space-y-4">
+                <div className="mt-5 space-y-1">
                   {categories.map((item) => {
                     const active = categoria === item.value;
                     return (
                       <Link
                         key={item.value}
                         href={`/produtos?categoria=${item.value}&ordenar=${ordenar}`}
-                        className={`block rounded-[6px] px-4 py-4 text-2xl font-medium transition ${
+                        className={`block rounded-[6px] px-4 py-3 text-[17px] transition ${
                           active
-                            ? "bg-[#B76E2B] text-white"
-                            : "text-neutral-900 hover:bg-[#efe4d8]"
+                            ? "bg-[#B76E2B] font-medium text-white"
+                            : "text-neutral-700 hover:bg-[#efe4d8] hover:text-neutral-900"
                         }`}
                       >
                         {item.label}
