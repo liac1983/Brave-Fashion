@@ -4,6 +4,7 @@ import { getCollections, getProducts, getHomepage } from "@/lib/sanity";
 import NewsletterForm from "@/components/newsletter-form";
 import HeroSection from "@/components/home/hero-section";
 import FadeIn from "@/components/ui/fade-in";
+import { cropped, croppedCard } from "@/lib/sanity/image";
 
 export default async function HomePage() {
   const [products, collections, homepage] = await Promise.all([
@@ -73,7 +74,7 @@ export default async function HomePage() {
                     {product.featuredImage ? (
                       <>
                         <Image
-                          src={product.featuredImage.url}
+                          src={croppedCard(product.featuredImage) ?? product.featuredImage.url}
                           alt={product.featuredImage.altText || product.title}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -83,7 +84,7 @@ export default async function HomePage() {
                         />
                         {hoverImage && (
                           <Image
-                            src={hoverImage.url}
+                            src={croppedCard(hoverImage) ?? hoverImage.url}
                             alt={hoverImage.altText || product.title}
                             fill
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -157,7 +158,7 @@ export default async function HomePage() {
                   >
                     {collection.image ? (
                       <Image
-                        src={collection.image.url}
+                        src={cropped(collection.image, 900, 1200) ?? collection.image.url}
                         alt={collection.image.altText || collection.title}
                         fill
                         sizes="(max-width: 768px) 100vw, 33vw"

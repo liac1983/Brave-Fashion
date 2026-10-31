@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useFavorites } from "@/components/favorites/favorites-provider";
 import HeartButton from "@/components/favorites/heart-button";
+import { croppedCard } from "@/lib/sanity/image";
 
 export default function FavoritosPage() {
   const { items } = useFavorites();
@@ -43,7 +44,7 @@ export default function FavoritosPage() {
                   <div className="relative aspect-[3/4] overflow-hidden rounded-[6px] bg-white">
                     {item.image ? (
                       <Image
-                        src={item.image.url}
+                        src={croppedCard(item.image) ?? item.image.url}
                         alt={item.image.altText || item.title}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"

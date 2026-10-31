@@ -5,6 +5,7 @@ import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { Trash2, FolderOpen } from "lucide-react";
+import { croppedCard } from "@/lib/sanity/image";
 
 type Product = {
   _id: string;
@@ -133,7 +134,7 @@ export default function PerfilPage() {
                           <div className="relative aspect-[3/4] overflow-hidden rounded-[6px] bg-white">
                             {product.image ? (
                               <Image
-                                src={product.image.url}
+                                src={croppedCard(product.image) ?? product.image.url}
                                 alt={product.image.altText || product.title}
                                 fill
                                 sizes="(max-width: 640px) 100vw, 25vw"

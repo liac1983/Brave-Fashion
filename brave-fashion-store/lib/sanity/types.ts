@@ -3,6 +3,10 @@ export type SanityImage = {
   altText: string | null;
   width: number | null;
   height: number | null;
+  /** Referência ao ficheiro e o ponto focal definido no Studio. */
+  asset?: { _ref?: string; _type?: string } | null;
+  hotspot?: { x: number; y: number; height: number; width: number } | null;
+  crop?: { top: number; bottom: number; left: number; right: number } | null;
 };
 
 export type Product = {

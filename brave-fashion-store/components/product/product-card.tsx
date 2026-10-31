@@ -2,10 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import HeartButton from "@/components/favorites/heart-button";
+import { croppedCard } from "@/lib/sanity/image";
 
 type ProductImage = {
   url: string;
   altText: string | null;
+  asset?: { _ref?: string; _type?: string } | null;
+  hotspot?: { x: number; y: number; height: number; width: number } | null;
+  crop?: { top: number; bottom: number; left: number; right: number } | null;
 };
 
 type ProductCardProps = {
@@ -45,7 +49,7 @@ export default function ProductCard({
           {image ? (
             <>
               <Image
-                src={image.url}
+                src={croppedCard(image) ?? image.url}
                 alt={image.altText || title}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
@@ -55,7 +59,7 @@ export default function ProductCard({
               />
               {hoverImage && (
                 <Image
-                  src={hoverImage.url}
+                  src={croppedCard(hoverImage) ?? hoverImage.url}
                   alt={hoverImage.altText || title}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"

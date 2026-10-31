@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product, SanityImage } from "@/lib/sanity/types";
+import { cropped } from "@/lib/sanity/image";
 import WhatsAppButton from "@/components/product/whatsapp-button";
 import BuyButton from "@/components/product/buy-button";
 import HeartButton from "@/components/favorites/heart-button";
@@ -54,7 +55,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             <div className="relative aspect-[3/4] overflow-hidden rounded-[6px] bg-white">
               <Image
                 key={currentImage.url}
-                src={currentImage.url}
+                src={cropped(currentImage, 1200, 1600) ?? currentImage.url}
                 alt={currentImage.altText || product.title}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"

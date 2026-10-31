@@ -4,7 +4,10 @@ const imageFields = groq`
   "url": asset->url,
   "altText": alt,
   "width": asset->metadata.dimensions.width,
-  "height": asset->metadata.dimensions.height
+  "height": asset->metadata.dimensions.height,
+  asset,
+  hotspot,
+  crop
 `
 
 const productFields = groq`
