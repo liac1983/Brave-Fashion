@@ -45,7 +45,20 @@ export default function Header() {
           : "border-b border-[#e9dfd3] bg-[#f7f2ec]/95 backdrop-blur"
       }`}
     >
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 md:px-6">
+      {/*
+        Véu que desce do topo e se dissolve. Sem ele, os links brancos caem
+        em cima do letreiro iluminado da loja — a zona mais clara da
+        fotografia — e deixam de se ler. Escurece só a faixa do menu; o
+        centro da imagem, onde está o título, fica como estava.
+      */}
+      {transparent && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/60 via-black/25 to-transparent"
+        />
+      )}
+
+      <div className="relative mx-auto flex h-20 max-w-7xl items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-3">
           <div className="block md:hidden">
             <button
