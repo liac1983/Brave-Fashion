@@ -1,6 +1,6 @@
 import Stripe from "stripe";
-import { writeClient } from "@/sanity/lib/writeClient";
 import { getStripeSecretKey } from "@/lib/stripe";
+import { descerStock } from "@/lib/stock";
 
 /**
  * Recebe os pagamentos do Stripe e avisa a loja por email.
@@ -98,17 +98,30 @@ export async function POST(request: Request) {
     return new Response("Email não configurado.", { status: 500 });
   }
 
-  // A peça é única: assim que é paga, sai do site. Antes do email, porque é
-  // pior vender duas vezes do que ficar sem aviso de uma venda.
+  // O stock desce antes do email, porque é pior vender duas vezes a mesma peça
+  // do que ficar sem aviso de uma venda. O que aconteceu ao stock vai depois no
+  // email, para a Paula não ter de ir confirmar ao Studio.
   const productId = session.metadata?.productId;
+  const tamanhoComprado = session.metadata?.tamanho ?? "";
+
+  let notaDoStock = "";
 
   if (productId) {
-    try {
-      await writeClient.patch(productId).set({ available: false, venderOnline: false }).commit();
-      console.info("[stripe] peça marcada como vendida:", productId);
-    } catch (error) {
-      console.error("[stripe] não foi possível marcar a peça como vendida:", error);
-    }
+    const resultado = await descerStock({
+      productId,
+      tamanhoKey: session.metadata?.tamanhoKey ?? undefined,
+      tamanhoLabel: tamanhoComprado || undefined,
+      referencia: session.id,
+    });
+
+    notaDoStock =
+      resultado.estado === "repetido"
+        ? "aviso repetido pelo Stripe — o stock já tinha sido descontado, nada mudou agora"
+        : resultado.estado === "falhou"
+          ? `ATENÇÃO: ${resultado.resumo}`
+          : resultado.resumo;
+
+    console.info("[stripe] stock:", resultado.estado, notaDoStock);
   }
 
   let artigos: string[] = [];
@@ -136,10 +149,11 @@ export async function POST(request: Request) {
     ["Telefone", details?.phone ?? ""],
     ["Morada", formatAddress(session.collected_information?.shipping_details?.address ?? details?.address)],
     ["Artigos", artigos.join("\n")],
+    ["Tamanho", tamanhoComprado],
     ["Portes", eur(session.total_details?.amount_shipping)],
     ["Total pago", eur(session.amount_total)],
     ["Referência Stripe", session.id],
-    ["Peça no site", productId ? "marcada como vendida e retirada do site" : ""],
+    ["Peça no site", notaDoStock],
   ];
 
   const preenchidos = campos.filter(([, valor]) => valor);

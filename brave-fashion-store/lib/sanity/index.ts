@@ -9,6 +9,30 @@ import {
   LEGAL_PAGE_QUERY,
 } from './queries'
 import type { Product, Collection, Homepage, LegalPage } from './types'
+import type { Tamanho } from '@/lib/shop'
+
+/** Linha do campo "Tamanhos e quantidades" como vem do Sanity. */
+type RawTamanho = { key?: string; label?: string; stock?: number }
+
+/**
+ * Linhas sem tamanho ou sem chave são descartadas: aconteceria se a Paula
+ * acrescentasse uma linha no Studio e saísse antes de a preencher, e um
+ * tamanho sem nome não é escolha nenhuma para quem está a comprar.
+ */
+function mapTamanhos(raw: unknown): Tamanho[] {
+  if (!Array.isArray(raw)) return []
+
+  return (raw as RawTamanho[])
+    .filter(
+      (linha): linha is RawTamanho & { key: string; label: string } =>
+        Boolean(linha?.key && linha?.label),
+    )
+    .map((linha) => ({
+      key: linha.key,
+      label: linha.label,
+      stock: typeof linha.stock === 'number' ? linha.stock : 0,
+    }))
+}
 
 function mapProduct(raw: any): Product {
   const allImages: Product['images']['edges'] = (raw.allImages ?? []).map(
@@ -25,6 +49,7 @@ function mapProduct(raw: any): Product {
     available: raw.available ?? true,
     originalPrice: raw.originalPrice ?? null,
     venderOnline: raw.venderOnline ?? false,
+    tamanhos: mapTamanhos(raw.tamanhos),
     featuredImage: raw.featuredImage ?? null,
     images: { edges: allImages },
     priceRange: {

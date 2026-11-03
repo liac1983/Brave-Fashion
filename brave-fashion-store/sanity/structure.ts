@@ -3,9 +3,13 @@ import type { StructureResolver } from 'sanity/structure'
 /**
  * Menu do Studio.
  *
- * O item "À venda online" existe para a Paula ver de relance que peças estão
- * à venda no site. Como a maioria das peças é de unidade única, quando uma sai
- * da loja o link tem de ser apagado — e essa lista é onde isso se confirma.
+ * "À venda online" é a lista das peças que o site pode cobrar sozinho — serve
+ * para a Paula ver de relance o que está exposto à venda.
+ *
+ * "Tamanhos esgotados" apanha o caso contrário: peças que continuam ligadas à
+ * venda mas já não têm unidade nenhuma em nenhum tamanho. O site deixa de as
+ * vender sozinho, mas é aqui que ela as vê para repor quantidades ou desligar
+ * a venda.
  */
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -21,6 +25,17 @@ export const structure: StructureResolver = (S) =>
           S.documentList()
             .title('À venda online')
             .filter('_type == "product" && venderOnline == true')
+            .defaultOrdering([{ field: 'title', direction: 'asc' }])
+        ),
+
+      S.listItem()
+        .title('Tamanhos esgotados')
+        .child(
+          S.documentList()
+            .title('Tamanhos esgotados')
+            .filter(
+              '_type == "product" && count(tamanhos) > 0 && count(tamanhos[stock > 0]) == 0'
+            )
             .defaultOrdering([{ field: 'title', direction: 'asc' }])
         ),
 

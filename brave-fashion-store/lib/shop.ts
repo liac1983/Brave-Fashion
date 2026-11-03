@@ -1,9 +1,10 @@
 /**
  * Regras comerciais da venda online.
  *
- * Estes valores são apenas o que o site MOSTRA à cliente. O que ela paga de
- * facto é definido no Payment Link do Stripe — manter os dois em sintonia é
- * manual enquanto a fase 1 durar.
+ * Os portes mostrados aqui são os mesmos que o checkout cobra: o
+ * `app/api/checkout/route.ts` constrói as opções de envio a partir destes
+ * valores, por isso mudar um número neste ficheiro muda o que a cliente vê na
+ * página da peça e o que paga no Stripe.
  */
 
 export const SHIPPING = {
@@ -21,6 +22,43 @@ export const SHIPPING = {
   /** Levantamento na loja, em Paços de Ferreira. */
   pickupAvailable: true,
 } as const;
+
+/**
+ * Um tamanho de uma peça e quantas unidades existem dele.
+ *
+ * `key` é a chave que o Sanity dá a cada linha do campo "Tamanhos e
+ * quantidades". É por ela que o site identifica o tamanho de uma ponta à
+ * outra — do botão de comprar até ao desconto do stock — porque o nome pode
+ * ser corrigido no Studio a qualquer momento e a chave não muda.
+ */
+export type Tamanho = {
+  key: string;
+  label: string;
+  stock: number;
+};
+
+/** Só os tamanhos que a cliente pode escolher. */
+export function tamanhosComStock(tamanhos: Tamanho[] | undefined | null) {
+  return (tamanhos ?? []).filter((tamanho) => tamanho.stock > 0);
+}
+
+/**
+ * Uma peça "tem tamanhos" quando a Paula preencheu a lista no Studio.
+ *
+ * Lista vazia é o caso normal da loja: peça de unidade única, sem tamanho a
+ * escolher. Toda a lógica de stock olha primeiro para isto.
+ */
+export function temTamanhos(tamanhos: Tamanho[] | undefined | null) {
+  return (tamanhos ?? []).length > 0;
+}
+
+/** Unidades ainda por vender, somando todos os tamanhos. */
+export function stockTotal(tamanhos: Tamanho[] | undefined | null) {
+  return (tamanhos ?? []).reduce(
+    (total, tamanho) => total + Math.max(0, tamanho.stock),
+    0
+  );
+}
 
 export function formatEur(amount: number) {
   return new Intl.NumberFormat("pt-PT", {

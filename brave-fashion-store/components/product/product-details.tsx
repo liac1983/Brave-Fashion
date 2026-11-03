@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product, SanityImage } from "@/lib/sanity/types";
 import { cropped } from "@/lib/sanity/image";
+import { stockTotal, tamanhosComStock, temTamanhos } from "@/lib/shop";
 import WhatsAppButton from "@/components/product/whatsapp-button";
 import BuyButton from "@/components/product/buy-button";
 import HeartButton from "@/components/favorites/heart-button";
@@ -34,6 +35,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentImage = carouselImages[currentIndex] ?? null;
   const category = useMemo(() => getCategoryFromProduct(product), [product]);
+
+  const tamanhos = product.tamanhos ?? [];
+  const comTamanhos = temTamanhos(tamanhos);
+  // Peça com tamanhos mas sem unidades. Em princípio o site já a teria
+  // retirado sozinho; isto cobre o caso de a Paula pôr as quantidades a zero
+  // à mão no Studio sem desligar a venda online.
+  const esgotada = comTamanhos && stockTotal(tamanhos) <= 0;
 
   function goToPrevious() {
     setCurrentIndex((prev) =>
@@ -134,10 +142,21 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           €{Number(product.priceRange.minVariantPrice.amount).toFixed(2)}
         </p>
 
-        {product.venderOnline && product.available ? (
-          <BuyButton handle={product.handle} />
+        {product.venderOnline && product.available && !esgotada ? (
+          <BuyButton handle={product.handle} tamanhos={tamanhos} />
         ) : (
-          <WhatsAppButton productTitle={product.title} productHandle={product.handle} />
+          <>
+            {comTamanhos && (
+              <p className="mt-6 text-[17px] text-neutral-600">
+                {esgotada
+                  ? "Esgotado em todos os tamanhos. Fale com a loja para saber se volta a haver."
+                  : `Tamanhos disponíveis: ${tamanhosComStock(tamanhos)
+                      .map((tamanho) => tamanho.label)
+                      .join(", ")}`}
+              </p>
+            )}
+            <WhatsAppButton productTitle={product.title} productHandle={product.handle} />
+          </>
         )}
         <AddToListButton productId={product.id} />
 

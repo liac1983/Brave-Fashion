@@ -1,3 +1,5 @@
+import type { Tamanho } from "@/lib/shop";
+
 export type SanityImage = {
   url: string;
   altText: string | null;
@@ -19,6 +21,11 @@ export type Product = {
   available: boolean;
   originalPrice: number | null;
   venderOnline: boolean;
+  /**
+   * Tamanhos com a quantidade de cada. Vazio quando a peça é de unidade
+   * única, que é o caso da maioria das peças da loja.
+   */
+  tamanhos: Tamanho[];
   featuredImage: SanityImage | null;
   images: {
     edges: Array<{ node: SanityImage }>;

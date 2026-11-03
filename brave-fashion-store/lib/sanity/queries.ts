@@ -21,6 +21,11 @@ const productFields = groq`
   available,
   originalPrice,
   venderOnline,
+  "tamanhos": tamanhos[] {
+    "key": _key,
+    "label": tamanho,
+    stock
+  },
   "featuredImage": images[0] {
     ${imageFields}
   },

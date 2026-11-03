@@ -5,7 +5,16 @@ import { userFavorites } from './userFavorites'
 import { userList } from './userList'
 import { homepage } from './homepage'
 import { legalPage } from './legalPage'
+import { vendaProcessada } from './vendaProcessada'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [product, collection, userFavorites, userList, homepage, legalPage],
+  types: [
+    product,
+    collection,
+    userFavorites,
+    userList,
+    homepage,
+    legalPage,
+    vendaProcessada,
+  ],
 }
