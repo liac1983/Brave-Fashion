@@ -62,11 +62,12 @@ export const metadata: Metadata = {
       "Moda elegante e sofisticada para mulheres que apreciam qualidade e estilo.",
     images: ["/logo.jpg"],
   },
-  // Código do Google Search Console, se a verificação for feita pela etiqueta
-  // HTML. Pela Cloudflare (registo DNS) não é preciso nada aqui.
-  ...(process.env.GOOGLE_SITE_VERIFICATION
-    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
-    : {}),
+  // Prova ao Google Search Console que o site é da loja (propriedade
+  // "Prefixo do URL", conta bagasvaidosas@gmail.com). Não é segredo: é
+  // publicado na página. Apagar isto faz o Search Console perder o acesso.
+  verification: {
+    google: "35sXjxuQKc4-CLA1UydaBqY1HT9EBjvlYwTypsiCVYw",
+  },
 };
 
 export default function RootLayout({
