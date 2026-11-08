@@ -1,35 +1,120 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, ShieldCheck, ShoppingBag } from "lucide-react";
-import { shippingSummary, tamanhosComStock, type Tamanho } from "@/lib/shop";
+import { Loader2, Minus, Plus, ShieldCheck, ShoppingBag } from "lucide-react";
+import {
+  coresDisponiveis,
+  maximoPorCompra,
+  shippingSummary,
+  tamanhosDisponiveis,
+  variantesComStock,
+  type Variante,
+} from "@/lib/shop";
 
 type BuyButtonProps = {
   /** Slug da peça. O preço é lido no servidor, nunca enviado daqui. */
   handle: string;
   /**
-   * Tamanhos da peça. Vazio quando a peça é única — e aí não há nada a
-   * escolher, o botão compra a peça e pronto.
+   * Cores e tamanhos da peça. Vazio quando a peça é única — e aí não há nada
+   * a escolher, o botão compra a peça e pronto.
    */
-  tamanhos?: Tamanho[];
+  variantes?: Variante[];
 };
 
-export default function BuyButton({ handle, tamanhos = [] }: BuyButtonProps) {
-  const disponiveis = tamanhosComStock(tamanhos);
-  const precisaDeTamanho = disponiveis.length > 0;
+/** Com uma só opção não há escolha a fazer: deixa-se escolhida. */
+function unica(opcoes: string[]) {
+  return opcoes.length === 1 ? opcoes[0] : "";
+}
 
-  // Com um tamanho só não há escolha a fazer: deixa-se escolhido.
-  const [tamanhoKey, setTamanhoKey] = useState(
-    disponiveis.length === 1 ? disponiveis[0].key : ""
+function Opcoes({
+  titulo,
+  opcoes,
+  escolhida,
+  onEscolher,
+}: {
+  titulo: string;
+  opcoes: string[];
+  escolhida: string;
+  onEscolher: (valor: string) => void;
+}) {
+  return (
+    <fieldset className="mb-6">
+      <legend className="text-[15px] font-medium text-neutral-900">
+        {titulo}
+        {escolhida && <span className="font-normal text-neutral-500">: {escolhida}</span>}
+      </legend>
+
+      <div className="mt-3 flex flex-wrap gap-2.5">
+        {opcoes.map((opcao) => {
+          const selecionada = opcao === escolhida;
+
+          return (
+            <button
+              key={opcao}
+              type="button"
+              aria-pressed={selecionada}
+              onClick={() => onEscolher(opcao)}
+              className={`min-w-[52px] rounded-[6px] border px-4 py-3 text-[16px] transition ${
+                selecionada
+                  ? "border-[#B76E2B] bg-[#B76E2B] text-white"
+                  : "border-[#e7d9cf] bg-white text-neutral-800 hover:border-[#B76E2B]"
+              }`}
+            >
+              {opcao}
+            </button>
+          );
+        })}
+      </div>
+    </fieldset>
   );
+}
+
+export default function BuyButton({ handle, variantes = [] }: BuyButtonProps) {
+  const disponiveis = variantesComStock(variantes);
+  const temOpcoes = disponiveis.length > 0;
+
+  const cores = coresDisponiveis(variantes);
+  const [cor, setCor] = useState(unica(cores));
+
+  // Os tamanhos dependem da cor: o M pode existir em azul e não em preto.
+  const tamanhos = tamanhosDisponiveis(variantes, cores.length > 0 ? cor : null);
+  const [tamanho, setTamanho] = useState(unica(tamanhosDisponiveis(variantes, unica(cores) || null)));
+
+  const [quantidade, setQuantidade] = useState(1);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
 
-  const escolhido = disponiveis.find((tamanho) => tamanho.key === tamanhoKey) ?? null;
+  const precisaDeCor = cores.length > 0;
+  const precisaDeTamanho = tamanhosDisponiveis(variantes).length > 0;
+
+  const escolhida = temOpcoes
+    ? (disponiveis.find(
+        (variante) =>
+          (!precisaDeCor || variante.cor === cor) &&
+          (!precisaDeTamanho || variante.tamanho === tamanho)
+      ) ?? null)
+    : null;
+
+  // Peça única: só há uma. Com variante escolhida: até ao stock dela.
+  const maximo = !temOpcoes ? 1 : escolhida ? maximoPorCompra(escolhida.stock) : 1;
+  const quantidadeValida = Math.min(quantidade, maximo);
+
+  function escolherCor(novaCor: string) {
+    setCor(novaCor);
+    setErro("");
+    // Se o tamanho escolhido não existir na nova cor, larga-se — ou, se só
+    // houver um tamanho nessa cor, escolhe-se esse.
+    const tamanhosDaCor = tamanhosDisponiveis(variantes, novaCor);
+    if (!tamanhosDaCor.includes(tamanho)) setTamanho(unica(tamanhosDaCor));
+  }
 
   async function comprar() {
-    if (precisaDeTamanho && !escolhido) {
-      setErro("Escolha o tamanho para continuar.");
+    if (temOpcoes && !escolhida) {
+      setErro(
+        precisaDeCor && !cor
+          ? "Escolha a cor para continuar."
+          : "Escolha o tamanho para continuar."
+      );
       return;
     }
 
@@ -42,7 +127,8 @@ export default function BuyButton({ handle, tamanhos = [] }: BuyButtonProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           handle,
-          ...(escolhido ? { tamanho: escolhido.key } : {}),
+          quantidade: quantidadeValida,
+          ...(escolhida ? { variante: escolhida.key } : {}),
         }),
       });
 
@@ -64,39 +150,60 @@ export default function BuyButton({ handle, tamanhos = [] }: BuyButtonProps) {
 
   return (
     <div className="mt-6">
-      {precisaDeTamanho && (
-        <fieldset className="mb-6">
-          <legend className="text-[15px] font-medium text-neutral-900">Tamanho</legend>
+      {precisaDeCor && (
+        <Opcoes titulo="Cor" opcoes={cores} escolhida={cor} onEscolher={escolherCor} />
+      )}
 
-          <div className="mt-3 flex flex-wrap gap-2.5">
-            {disponiveis.map((tamanho) => {
-              const selecionado = tamanho.key === tamanhoKey;
+      {precisaDeTamanho && (!precisaDeCor || cor) && (
+        <Opcoes
+          titulo="Tamanho"
+          opcoes={tamanhos}
+          escolhida={tamanho}
+          onEscolher={(novo) => {
+            setTamanho(novo);
+            setErro("");
+          }}
+        />
+      )}
 
-              return (
-                <button
-                  key={tamanho.key}
-                  type="button"
-                  aria-pressed={selecionado}
-                  onClick={() => {
-                    setTamanhoKey(tamanho.key);
-                    setErro("");
-                  }}
-                  className={`min-w-[52px] rounded-[6px] border px-4 py-3 text-[16px] transition ${
-                    selecionado
-                      ? "border-[#B76E2B] bg-[#B76E2B] text-white"
-                      : "border-[#e7d9cf] bg-white text-neutral-800 hover:border-[#B76E2B]"
-                  }`}
-                >
-                  {tamanho.label}
-                </button>
-              );
-            })}
+      {temOpcoes && (
+        <div className="mb-6">
+          <p className="text-[15px] font-medium text-neutral-900">Quantidade</p>
+
+          <div className="mt-3 flex items-center gap-4">
+            <div className="inline-flex items-center rounded-[6px] border border-[#e7d9cf] bg-white">
+              <button
+                type="button"
+                aria-label="Menos uma unidade"
+                disabled={quantidadeValida <= 1}
+                onClick={() => setQuantidade(Math.max(1, quantidadeValida - 1))}
+                className="flex h-12 w-12 items-center justify-center text-neutral-800 transition hover:text-[#B76E2B] disabled:opacity-30"
+              >
+                <Minus size={18} />
+              </button>
+              <span aria-live="polite" className="w-10 text-center text-[17px] tabular-nums">
+                {quantidadeValida}
+              </span>
+              <button
+                type="button"
+                aria-label="Mais uma unidade"
+                disabled={!escolhida || quantidadeValida >= maximo}
+                onClick={() => setQuantidade(Math.min(maximo, quantidadeValida + 1))}
+                className="flex h-12 w-12 items-center justify-center text-neutral-800 transition hover:text-[#B76E2B] disabled:opacity-30"
+              >
+                <Plus size={18} />
+              </button>
+            </div>
+
+            {escolhida && escolhida.stock <= 3 && (
+              <p className="text-sm text-[#B76E2B]">
+                {escolhida.stock === 1
+                  ? "Última unidade."
+                  : `Só restam ${escolhida.stock} unidades.`}
+              </p>
+            )}
           </div>
-
-          {escolhido?.stock === 1 && (
-            <p className="mt-3 text-sm text-[#B76E2B]">Última unidade neste tamanho.</p>
-          )}
-        </fieldset>
+        </div>
       )}
 
       <button

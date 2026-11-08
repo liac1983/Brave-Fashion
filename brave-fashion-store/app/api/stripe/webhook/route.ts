@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import { getStripeSecretKey } from "@/lib/stripe";
 import { descerStock } from "@/lib/stock";
+import { extrairNif as extractNif, formatarMorada as formatAddress } from "@/lib/vendas";
 
 /**
  * Recebe os pagamentos do Stripe e avisa a loja por email.
@@ -23,26 +24,6 @@ function eur(cents: number | null | undefined) {
     style: "currency",
     currency: "EUR",
   }).format((cents ?? 0) / 100);
-}
-
-/** O NIF chega num campo personalizado do Payment Link. */
-function extractNif(session: Stripe.Checkout.Session) {
-  const field = (session.custom_fields ?? []).find((f) =>
-    /nif|contribuinte|fiscal/i.test(`${f.key} ${f.label?.custom ?? ""}`)
-  );
-  return field?.text?.value || field?.numeric?.value || "";
-}
-
-function formatAddress(address: Stripe.Address | null | undefined) {
-  if (!address) return "";
-  return [
-    address.line1,
-    address.line2,
-    [address.postal_code, address.city].filter(Boolean).join(" "),
-    address.country,
-  ]
-    .filter(Boolean)
-    .join("\n");
 }
 
 export async function POST(request: Request) {
@@ -83,6 +64,7 @@ export async function POST(request: Request) {
   }
 
   const session = event.data.object;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bravefashionbypaulavalente.com";
 
   // Pagamentos diferidos (Multibanco) só contam quando o dinheiro entra.
   if (session.payment_status !== "paid") {
@@ -101,16 +83,20 @@ export async function POST(request: Request) {
   // O stock desce antes do email, porque é pior vender duas vezes a mesma peça
   // do que ficar sem aviso de uma venda. O que aconteceu ao stock vai depois no
   // email, para a Paula não ter de ir confirmar ao Studio.
-  const productId = session.metadata?.productId;
-  const tamanhoComprado = session.metadata?.tamanho ?? "";
+  const meta = session.metadata ?? {};
+  const productId = meta.productId;
+  const quantidade = Number.parseInt(meta.quantidade ?? "1", 10) || 1;
+  const varianteComprada = meta.variante ?? "";
 
   let notaDoStock = "";
 
   if (productId) {
     const resultado = await descerStock({
       productId,
-      tamanhoKey: session.metadata?.tamanhoKey ?? undefined,
-      tamanhoLabel: tamanhoComprado || undefined,
+      varianteKey: meta.varianteKey || undefined,
+      cor: meta.cor || undefined,
+      tamanho: meta.tamanho || undefined,
+      quantidade,
       referencia: session.id,
     });
 
@@ -149,7 +135,8 @@ export async function POST(request: Request) {
     ["Telefone", details?.phone ?? ""],
     ["Morada", formatAddress(session.collected_information?.shipping_details?.address ?? details?.address)],
     ["Artigos", artigos.join("\n")],
-    ["Tamanho", tamanhoComprado],
+    ["Cor / tamanho", varianteComprada],
+    ["Quantidade", quantidade > 1 ? String(quantidade) : ""],
     ["Portes", eur(session.total_details?.amount_shipping)],
     ["Total pago", eur(session.amount_total)],
     ["Referência Stripe", session.id],
@@ -164,6 +151,7 @@ export async function POST(request: Request) {
     ...preenchidos.map(([rotulo, valor]) => `${rotulo}: ${valor}`),
     "",
     "Passar a fatura no Sage 50c com estes dados.",
+    `Lista de todas as vendas: ${siteUrl}/vendas`,
   ].join("\n");
 
   const htmlContent = `
@@ -182,6 +170,7 @@ export async function POST(request: Request) {
       </table>
       <p style="margin:24px 0 0;font-size:13px;color:#8a8a8a">
         Passar a fatura no Sage 50c com estes dados. O comprovativo do pagamento está no painel do Stripe.
+        Todas as vendas, e quais já têm fatura, estão em <a href="${siteUrl}/vendas" style="color:#B76E2B">${siteUrl.replace(/^https?:\/\//, "")}/vendas</a>.
       </p>
     </div>
   `;

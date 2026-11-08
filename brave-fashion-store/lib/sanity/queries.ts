@@ -21,9 +21,10 @@ const productFields = groq`
   available,
   originalPrice,
   venderOnline,
-  "tamanhos": tamanhos[] {
+  "variantes": variantes[] {
     "key": _key,
-    "label": tamanho,
+    cor,
+    tamanho,
     stock
   },
   "featuredImage": images[0] {
@@ -79,6 +80,12 @@ export const PRODUCTS_BY_CATEGORY_QUERY = groq`
   }
 `
 
+export const PROMOTIONS_QUERY = groq`
+  *[_type == "product" && available == true && defined(originalPrice) && originalPrice > price] | order(_createdAt desc) {
+    ${productFields}
+  }
+`
+
 export const NEW_PRODUCTS_QUERY = groq`
   *[_type == "product" && available == true && isNew == true] | order(_createdAt desc) {
     ${productFields}
@@ -87,6 +94,20 @@ export const NEW_PRODUCTS_QUERY = groq`
 
 export const HOMEPAGE_QUERY = groq`
   *[_type == "homepage"][0] {
+    "slides": slides[] {
+      "key": _key,
+      tipo,
+      titulo,
+      subtitulo,
+      mostrarBotao,
+      fundo,
+      "imagem": imagem {
+        ${imageFields}
+      },
+      "logo": logo {
+        ${imageFields}
+      }
+    },
     "heroImage": heroImage {
       ${imageFields}
     },

@@ -1,4 +1,22 @@
+import { createElement } from 'react'
 import type { StructureResolver } from 'sanity/structure'
+
+/**
+ * As vendas não vivem no Sanity (trazem dados das clientes e o Sanity é de
+ * leitura pública): vivem no Stripe e veem-se em /vendas. Isto é só o atalho.
+ */
+function AtalhoVendas() {
+  return createElement(
+    'div',
+    { style: { padding: 24, fontFamily: 'inherit', lineHeight: 1.6 } },
+    createElement('p', null, 'As vendas do site, com os dados para passar as faturas, estão numa página própria.'),
+    createElement(
+      'a',
+      { href: '/vendas', target: '_blank', rel: 'noreferrer', style: { color: '#B76E2B', fontWeight: 600 } },
+      'Abrir as vendas do site →'
+    )
+  )
+}
 
 /**
  * Menu do Studio.
@@ -6,8 +24,8 @@ import type { StructureResolver } from 'sanity/structure'
  * "À venda online" é a lista das peças que o site pode cobrar sozinho — serve
  * para a Paula ver de relance o que está exposto à venda.
  *
- * "Tamanhos esgotados" apanha o caso contrário: peças que continuam ligadas à
- * venda mas já não têm unidade nenhuma em nenhum tamanho. O site deixa de as
+ * "Esgotados" apanha o caso contrário: peças que continuam ligadas à venda mas
+ * já não têm unidade nenhuma em nenhuma cor nem tamanho. O site deixa de as
  * vender sozinho, mas é aqui que ela as vê para repor quantidades ou desligar
  * a venda.
  */
@@ -15,6 +33,12 @@ export const structure: StructureResolver = (S) =>
   S.list()
     .title('Conteúdo')
     .items([
+      S.listItem()
+        .title('Vendas do site')
+        .child(S.component(AtalhoVendas).title('Vendas do site')),
+
+      S.divider(),
+
       S.listItem()
         .title('Produtos')
         .child(S.documentTypeList('product').title('Produtos')),
@@ -29,12 +53,12 @@ export const structure: StructureResolver = (S) =>
         ),
 
       S.listItem()
-        .title('Tamanhos esgotados')
+        .title('Esgotados')
         .child(
           S.documentList()
-            .title('Tamanhos esgotados')
+            .title('Esgotados')
             .filter(
-              '_type == "product" && count(tamanhos) > 0 && count(tamanhos[stock > 0]) == 0'
+              '_type == "product" && count(variantes) > 0 && count(variantes[stock > 0]) == 0'
             )
             .defaultOrdering([{ field: 'title', direction: 'asc' }])
         ),

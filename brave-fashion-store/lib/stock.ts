@@ -1,19 +1,21 @@
 import { createHash } from "node:crypto";
 import { groq } from "next-sanity";
 import { writeClient } from "@/sanity/lib/writeClient";
-import { stockTotal, temTamanhos, type Tamanho } from "@/lib/shop";
+import { descreverVariante, stockTotal, temVariantes } from "@/lib/shop";
+import { mapVariantes } from "@/lib/sanity";
 
 /**
  * O que acontece ao stock quando um pagamento entra.
  *
  * Há dois tipos de peça na loja e eles comportam-se de maneira diferente:
  *
- * - **Peça única** (sem tamanhos preenchidos): assim que é paga sai do site.
+ * - **Peça única** (sem cores nem tamanhos preenchidos): assim que é paga sai do site.
  *   Marcar uma peça como vendida é uma operação que se pode repetir sem mal
  *   nenhum, por isso este caminho não precisa de proteção especial.
  *
- * - **Peça com tamanhos**: desce uma unidade do tamanho comprado, e só sai do
- *   site quando o último tamanho esgota. Descer stock *não* se pode repetir —
+ * - **Peça com variantes** (cor, tamanho ou só quantidade): desce as unidades
+ *   compradas da variante escolhida, e só sai do site quando a última
+ *   variante esgota. Descer stock *não* se pode repetir —
  *   daí a marca de venda, explicada em `vendaProcessada`.
  */
 
@@ -21,9 +23,10 @@ const PRODUTO_QUERY = groq`
   *[_type == "product" && _id == $id][0] {
     _id,
     title,
-    "tamanhos": tamanhos[] {
+    "variantes": variantes[] {
       "key": _key,
-      "label": tamanho,
+      cor,
+      tamanho,
       stock
     }
   }
@@ -35,7 +38,7 @@ const PUBLICADO = { perspective: "published" } as const;
 type ProdutoStock = {
   _id: string;
   title: string | null;
-  tamanhos: Tamanho[] | null;
+  variantes: unknown;
 };
 
 export type ResultadoStock =
@@ -48,10 +51,13 @@ export type ResultadoStock =
 
 type Pedido = {
   productId: string;
-  /** Chave da linha de tamanho, como veio nos metadados do pagamento. */
-  tamanhoKey?: string;
-  /** Nome do tamanho, para o caso de a chave já não existir. */
-  tamanhoLabel?: string;
+  /** Chave da linha da variante, como veio nos metadados do pagamento. */
+  varianteKey?: string;
+  /** Cor e tamanho, para o caso de a chave já não existir. */
+  cor?: string;
+  tamanho?: string;
+  /** Unidades compradas. */
+  quantidade: number;
   /** Referência do pagamento. Só sai daqui em forma de impressão digital. */
   referencia: string;
 };
@@ -78,7 +84,7 @@ function eConflito(error: unknown) {
 
 /** Caminho de patch para o stock de uma linha, identificada pela chave. */
 function caminhoDoStock(key: string) {
-  return `tamanhos[_key=="${key}"].stock`;
+  return `variantes[_key=="${key}"].stock`;
 }
 
 function unidades(quantidade: number) {
@@ -112,10 +118,12 @@ export async function descerStock(pedido: Pedido): Promise<ResultadoStock> {
     return { estado: "falhou", resumo: "peça não encontrada no Studio — confirmar à mão" };
   }
 
-  const tamanhos = produto.tamanhos ?? [];
+  const variantes = mapVariantes(produto.variantes);
+  const quantidade = Math.max(1, Math.floor(pedido.quantidade || 1));
+  const pedidoLabel = descreverVariante({ cor: pedido.cor || null, tamanho: pedido.tamanho || null });
 
   // Peça única: sai do site e acabou.
-  if (!temTamanhos(tamanhos)) {
+  if (!temVariantes(variantes)) {
     try {
       await fecharPeca(pedido.productId);
       return { estado: "feito", resumo: "peça única — marcada como vendida e retirada do site" };
@@ -136,7 +144,7 @@ export async function descerStock(pedido: Pedido): Promise<ResultadoStock> {
       _type: "vendaProcessada",
       quando: new Date().toISOString(),
       produto: produto.title ?? pedido.productId,
-      tamanho: pedido.tamanhoLabel ?? "",
+      tamanho: [pedidoLabel, quantidade > 1 ? `× ${quantidade}` : ""].filter(Boolean).join(" "),
     });
   } catch (error) {
     if (eConflito(error)) {
@@ -152,29 +160,35 @@ export async function descerStock(pedido: Pedido): Promise<ResultadoStock> {
   }
 
   const linha =
-    tamanhos.find((tamanho) => tamanho.key === pedido.tamanhoKey) ??
+    variantes.find((variante) => variante.key === pedido.varianteKey) ??
     // A chave pode ter desaparecido se a linha foi apagada e reposta no
-    // Studio entretanto. O nome do tamanho é a segunda melhor pista.
-    tamanhos.find((tamanho) => tamanho.label === pedido.tamanhoLabel);
+    // Studio entretanto. A cor e o tamanho são a segunda melhor pista.
+    (pedidoLabel
+      ? variantes.find((variante) => descreverVariante(variante) === pedidoLabel)
+      : undefined) ??
+    // Peça com uma só linha (só quantidade): não há outra onde descontar.
+    (variantes.length === 1 ? variantes[0] : undefined);
 
   if (!linha) {
-    console.error("[stock] tamanho não encontrado:", pedido.tamanhoKey, pedido.tamanhoLabel);
+    console.error("[stock] variante não encontrada:", pedido.varianteKey, pedidoLabel);
     return {
       estado: "falhou",
-      resumo: `tamanho ${pedido.tamanhoLabel ?? "?"} já não existe na peça — descer a quantidade à mão`,
+      resumo: `${pedidoLabel || "a opção comprada"} já não existe na peça — descer ${unidades(quantidade)} à mão`,
     };
   }
+
+  const nome = descreverVariante(linha) || "peça";
 
   try {
     await writeClient
       .patch(pedido.productId)
-      .dec({ [caminhoDoStock(linha.key)]: 1 })
+      .dec({ [caminhoDoStock(linha.key)]: quantidade })
       .commit();
   } catch (error) {
     console.error("[stock] não foi possível descer a quantidade:", error);
     return {
       estado: "falhou",
-      resumo: `não foi possível descer o tamanho ${linha.label} — fazer isso no Studio`,
+      resumo: `não foi possível descer ${unidades(quantidade)} de ${nome} — fazer isso no Studio`,
     };
   }
 
@@ -188,18 +202,18 @@ export async function descerStock(pedido: Pedido): Promise<ResultadoStock> {
     console.error("[stock] não foi possível reler a peça:", error);
   }
 
-  const tamanhosDepois = depois?.tamanhos ?? [];
+  const variantesDepois = mapVariantes(depois?.variantes);
 
-  // Duas vendas em cima da última unidade podem levar a quantidade a negativo.
+  // Duas vendas em cima das últimas unidades podem levar a quantidade a negativo.
   // Isso não é stock — é uma peça a menos para entregar, e a Paula fica a saber
   // pelo email. No Studio fica a zero, que é o que ela consegue interpretar.
-  const negativos = tamanhosDepois.filter((tamanho) => tamanho.stock < 0);
+  const negativos = variantesDepois.filter((variante) => variante.stock < 0);
 
   if (negativos.length > 0) {
     try {
       const patch = writeClient.patch(pedido.productId);
-      for (const tamanho of negativos) {
-        patch.set({ [caminhoDoStock(tamanho.key)]: 0 });
+      for (const variante of negativos) {
+        patch.set({ [caminhoDoStock(variante.key)]: 0 });
       }
       await patch.commit();
       console.error("[stock] quantidade negativa corrigida para zero:", pedido.productId);
@@ -208,32 +222,38 @@ export async function descerStock(pedido: Pedido): Promise<ResultadoStock> {
     }
   }
 
-  const restantes = tamanhosDepois.find((tamanho) => tamanho.key === linha.key);
-  const sobramUnidades = stockTotal(tamanhosDepois);
+  const faltaram = negativos.find((variante) => variante.key === linha.key);
+  const avisoFalta = faltaram
+    ? ` ATENÇÃO: faltaram ${unidades(-faltaram.stock)} para esta venda`
+    : "";
+
+  const restantes = variantesDepois.find((variante) => variante.key === linha.key);
+  const sobramUnidades = stockTotal(variantesDepois);
+  const vendidas = quantidade > 1 ? `${quantidade} × ${nome}` : nome;
 
   if (sobramUnidades <= 0) {
     try {
       await fecharPeca(pedido.productId);
       return {
         estado: "feito",
-        resumo: `tamanho ${linha.label} vendido — era o último, a peça saiu do site`,
+        resumo: `${vendidas} vendido — era o que restava, a peça saiu do site.${avisoFalta}`,
       };
     } catch (error) {
       console.error("[stock] não foi possível retirar a peça do site:", error);
       return {
         estado: "falhou",
-        resumo: `tamanho ${linha.label} vendido e esgotado, mas a peça continua no site — desligar «À venda online» no Studio`,
+        resumo: `${vendidas} vendido e esgotado, mas a peça continua no site — desligar «À venda online» no Studio`,
       };
     }
   }
 
-  const sobramNesteTamanho = Math.max(0, restantes?.stock ?? 0);
+  const sobramNestaVariante = Math.max(0, restantes?.stock ?? 0);
 
   return {
     estado: "feito",
     resumo:
-      sobramNesteTamanho > 0
-        ? `tamanho ${linha.label} — ${restam(sobramNesteTamanho)} deste tamanho, ${unidades(sobramUnidades)} na peça no total`
-        : `tamanho ${linha.label} esgotado — ${restam(sobramUnidades)} noutros tamanhos`,
+      (sobramNestaVariante > 0
+        ? `${vendidas} — ${restam(sobramNestaVariante)} desta opção, ${unidades(sobramUnidades)} na peça no total`
+        : `${vendidas} — esta opção esgotou, ${restam(sobramUnidades)} noutras opções`) + avisoFalta,
   };
 }

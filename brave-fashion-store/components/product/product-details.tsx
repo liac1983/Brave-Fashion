@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product, SanityImage } from "@/lib/sanity/types";
 import { cropped } from "@/lib/sanity/image";
-import { stockTotal, tamanhosComStock, temTamanhos } from "@/lib/shop";
+import { coresDisponiveis, stockTotal, tamanhosDisponiveis, temVariantes } from "@/lib/shop";
 import WhatsAppButton from "@/components/product/whatsapp-button";
 import BuyButton from "@/components/product/buy-button";
 import HeartButton from "@/components/favorites/heart-button";
@@ -36,12 +36,14 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const currentImage = carouselImages[currentIndex] ?? null;
   const category = useMemo(() => getCategoryFromProduct(product), [product]);
 
-  const tamanhos = product.tamanhos ?? [];
-  const comTamanhos = temTamanhos(tamanhos);
-  // Peça com tamanhos mas sem unidades. Em princípio o site já a teria
+  const variantes = product.variantes ?? [];
+  const comVariantes = temVariantes(variantes);
+  const cores = coresDisponiveis(variantes);
+  const tamanhos = tamanhosDisponiveis(variantes);
+  // Peça com variantes mas sem unidades. Em princípio o site já a teria
   // retirado sozinho; isto cobre o caso de a Paula pôr as quantidades a zero
   // à mão no Studio sem desligar a venda online.
-  const esgotada = comTamanhos && stockTotal(tamanhos) <= 0;
+  const esgotada = comVariantes && stockTotal(variantes) <= 0;
 
   function goToPrevious() {
     setCurrentIndex((prev) =>
@@ -143,17 +145,20 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         </p>
 
         {product.venderOnline && product.available && !esgotada ? (
-          <BuyButton handle={product.handle} tamanhos={tamanhos} />
+          <BuyButton handle={product.handle} variantes={variantes} />
         ) : (
           <>
-            {comTamanhos && (
-              <p className="mt-6 text-[17px] text-neutral-600">
-                {esgotada
-                  ? "Esgotado em todos os tamanhos. Fale com a loja para saber se volta a haver."
-                  : `Tamanhos disponíveis: ${tamanhosComStock(tamanhos)
-                      .map((tamanho) => tamanho.label)
-                      .join(", ")}`}
-              </p>
+            {comVariantes && (
+              <div className="mt-6 space-y-1 text-[17px] text-neutral-600">
+                {esgotada ? (
+                  <p>Esgotado. Fale com a loja para saber se volta a haver.</p>
+                ) : (
+                  <>
+                    {cores.length > 0 && <p>Cores disponíveis: {cores.join(", ")}</p>}
+                    {tamanhos.length > 0 && <p>Tamanhos disponíveis: {tamanhos.join(", ")}</p>}
+                  </>
+                )}
+              </div>
             )}
             <WhatsAppButton productTitle={product.title} productHandle={product.handle} />
           </>

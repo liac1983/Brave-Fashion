@@ -63,29 +63,36 @@ export const product = defineType({
       initialValue: false,
       description:
         'Liga para esta peça poder ser comprada e paga no site. ' +
+        'Serve para qualquer peça, esteja ou não em promoção. ' +
         'Desligado, a peça continua a mostrar o botão de WhatsApp. ' +
-        'Quando a peça for vendida, o site desliga isto sozinho.',
+        'Quando a última unidade for vendida, o site desliga isto sozinho.',
     }),
     defineField({
-      name: 'tamanhos',
-      title: 'Tamanhos e quantidades',
+      name: 'variantes',
+      title: 'Cores, tamanhos e quantidades',
       type: 'array',
       description:
-        'Só para peças que existem em mais do que um tamanho. Escolhe o tamanho e quantas tens de cada. ' +
-        'Cada venda no site desce a quantidade sozinha, e o tamanho deixa de aparecer à cliente quando chega a zero. ' +
+        'Uma linha por cada combinação que tens: por exemplo "Azul · M · 2" e "Azul · L · 1". ' +
+        'A cor e o tamanho são opcionais — preenche só o que a peça tiver. ' +
+        'Cada venda no site desce a quantidade sozinha, e a combinação deixa de aparecer à cliente quando chega a zero. ' +
         'Deixa vazio se a peça é única: o site vende-a como uma só e retira-a do site quando for paga.',
       of: [
         defineArrayMember({
           type: 'object',
-          name: 'tamanhoStock',
-          title: 'Tamanho',
+          name: 'variante',
+          title: 'Variante',
           fields: [
+            defineField({
+              name: 'cor',
+              title: 'Cor',
+              type: 'string',
+              description: 'Escreve sempre da mesma maneira (ex.: "Azul") — é o que a cliente vê para escolher.',
+            }),
             defineField({
               name: 'tamanho',
               title: 'Tamanho',
               type: 'string',
               options: { list: TAMANHOS },
-              validation: (Rule) => Rule.required(),
             }),
             defineField({
               name: 'stock',
@@ -96,11 +103,12 @@ export const product = defineType({
             }),
           ],
           preview: {
-            select: { tamanho: 'tamanho', stock: 'stock' },
-            prepare({ tamanho, stock }) {
+            select: { cor: 'cor', tamanho: 'tamanho', stock: 'stock' },
+            prepare({ cor, tamanho, stock }) {
               const quantidade = typeof stock === 'number' ? stock : 0
+              const nome = [cor, tamanho].filter(Boolean).join(' · ')
               return {
-                title: tamanho || 'sem tamanho',
+                title: nome || 'Sem cor nem tamanho',
                 subtitle:
                   quantidade > 0
                     ? `${quantidade} ${quantidade === 1 ? 'unidade' : 'unidades'}`
@@ -111,18 +119,36 @@ export const product = defineType({
         }),
       ],
       validation: (Rule) =>
-        Rule.custom((tamanhos) => {
-          if (!Array.isArray(tamanhos)) return true
+        Rule.custom((variantes) => {
+          if (!Array.isArray(variantes) || variantes.length === 0) return true
 
-          const vistos = new Set<string>()
+          const linhas = variantes as { cor?: string; tamanho?: string }[]
+          const limpo = (valor?: string) => (valor ?? '').trim()
 
-          for (const linha of tamanhos) {
-            const nome = (linha as { tamanho?: string } | null)?.tamanho
-            if (!nome) continue
-            if (vistos.has(nome)) {
-              return `O tamanho ${nome} está na lista duas vezes. Junta as quantidades numa só linha.`
+          // Misturar linhas com e sem cor deixa a cliente sem saber o que
+          // escolher: "Azul" ou "nenhuma"? O mesmo para o tamanho.
+          const comCor = linhas.filter((linha) => limpo(linha.cor)).length
+          if (comCor > 0 && comCor < linhas.length) {
+            return 'Se uma linha tem cor, todas têm de ter. Preenche a cor que falta.'
+          }
+
+          const comTamanho = linhas.filter((linha) => linha.tamanho).length
+          if (comTamanho > 0 && comTamanho < linhas.length) {
+            return 'Se uma linha tem tamanho, todas têm de ter. Preenche o tamanho que falta.'
+          }
+
+          if (linhas.length > 1 && comCor === 0 && comTamanho === 0) {
+            return 'Sem cor nem tamanho basta uma linha, com a quantidade total.'
+          }
+
+          const vistas = new Set<string>()
+          for (const linha of linhas) {
+            const chave = `${limpo(linha.cor).toLowerCase()}|${linha.tamanho ?? ''}`
+            if (vistas.has(chave)) {
+              const nome = [limpo(linha.cor), linha.tamanho].filter(Boolean).join(' · ')
+              return `A combinação ${nome} está na lista duas vezes. Junta as quantidades numa só linha.`
             }
-            vistos.add(nome)
+            vistas.add(chave)
           }
 
           return true
@@ -163,21 +189,19 @@ export const product = defineType({
       title: 'title',
       media: 'images.0',
       price: 'price',
-      tamanhos: 'tamanhos',
+      variantes: 'variantes',
     },
-    prepare({ title, media, price, tamanhos }) {
-      const linhas: { tamanho?: string; stock?: number }[] = Array.isArray(tamanhos)
-        ? tamanhos
-        : []
+    prepare({ title, media, price, variantes }) {
+      const linhas: { stock?: number }[] = Array.isArray(variantes) ? variantes : []
 
-      const comStock = linhas.filter((linha) => (linha.stock ?? 0) > 0)
+      const unidades = linhas.reduce((total, linha) => total + Math.max(0, linha.stock ?? 0), 0)
 
       const resumo =
         linhas.length === 0
           ? ''
-          : comStock.length === 0
-            ? '  ·  tamanhos esgotados'
-            : `  ·  ${comStock.map((linha) => linha.tamanho).join(', ')}`
+          : unidades === 0
+            ? '  ·  esgotado'
+            : `  ·  ${unidades} ${unidades === 1 ? 'unidade' : 'unidades'}`
 
       return {
         title,

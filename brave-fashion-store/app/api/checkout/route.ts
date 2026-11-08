@@ -1,7 +1,15 @@
 import Stripe from "stripe";
 import { client } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
-import { SHIPPING, type Tamanho, stockTotal, temTamanhos } from "@/lib/shop";
+import {
+  SHIPPING,
+  type Variante,
+  descreverVariante,
+  maximoPorCompra,
+  stockTotal,
+  temVariantes,
+} from "@/lib/shop";
+import { mapVariantes } from "@/lib/sanity";
 import { getStripeSecretKey } from "@/lib/stripe";
 
 /**
@@ -9,9 +17,9 @@ import { getStripeSecretKey } from "@/lib/stripe";
  *
  * O preço vem sempre do Sanity, nunca do browser: assim não há forma de a
  * cliente alterar o valor, e nunca há um preço antigo guardado no Stripe à
- * espera de ser cobrado por engano. O mesmo vale para o tamanho — do browser
- * vem apenas a chave da linha, e é aqui que se confirma que essa linha existe
- * e que ainda tem unidades.
+ * espera de ser cobrado por engano. O mesmo vale para a cor e o tamanho — do
+ * browser vem apenas a chave da linha e a quantidade, e é aqui que se confirma
+ * que essa linha existe e que ainda tem unidades que cheguem.
  */
 
 const PRODUTO_QUERY = groq`
@@ -21,9 +29,10 @@ const PRODUTO_QUERY = groq`
     price,
     venderOnline,
     available,
-    "tamanhos": tamanhos[] {
+    "variantes": variantes[] {
       "key": _key,
-      "label": tamanho,
+      cor,
+      tamanho,
       stock
     },
     "imagem": images[0].asset->url
@@ -36,7 +45,7 @@ type Produto = {
   price: number;
   venderOnline: boolean;
   available: boolean;
-  tamanhos: Tamanho[] | null;
+  variantes: unknown;
   imagem: string | null;
 };
 
@@ -44,7 +53,7 @@ type Produto = {
  * O stock é lido fora da CDN e sempre na versão publicada.
  *
  * A CDN do Sanity serve respostas guardadas até um minuto. Para a descrição de
- * uma peça isso é irrelevante; para saber se o último M ainda existe, um minuto
+ * uma peça isso é irrelevante; para saber se o último M azul ainda existe, um minuto
  * é tempo que sobra para vender duas vezes a mesma unidade.
  *
  * A perspetiva fica escrita à mão porque o que ela vale por omissão depende da
@@ -58,8 +67,8 @@ function eurosParaCentimos(valor: number) {
 }
 
 /** Portes oferecidos no checkout. Os valores vivem em lib/shop.ts. */
-function opcoesDeEnvio(precoPeca: number): Stripe.Checkout.SessionCreateParams.ShippingOption[] {
-  const portesGratis = precoPeca >= SHIPPING.freeFrom;
+function opcoesDeEnvio(subtotal: number): Stripe.Checkout.SessionCreateParams.ShippingOption[] {
+  const portesGratis = subtotal >= SHIPPING.freeFrom;
 
   const taxa = (
     nome: string,
@@ -110,16 +119,27 @@ export async function POST(request: Request) {
   const secretKey = chave.key;
 
   let handle: string;
-  let tamanhoPedido: string | null = null;
+  let variantePedida: string | null = null;
+  let quantidade = 1;
 
   try {
-    const body = (await request.json()) as { handle?: unknown; tamanho?: unknown };
+    const body = (await request.json()) as {
+      handle?: unknown;
+      variante?: unknown;
+      quantidade?: unknown;
+    };
     if (typeof body.handle !== "string" || !body.handle) {
       return Response.json({ error: "Produto não indicado." }, { status: 400 });
     }
     handle = body.handle;
-    if (typeof body.tamanho === "string" && body.tamanho) {
-      tamanhoPedido = body.tamanho;
+    if (typeof body.variante === "string" && body.variante) {
+      variantePedida = body.variante;
+    }
+    if (body.quantidade !== undefined) {
+      if (typeof body.quantidade !== "number" || !Number.isInteger(body.quantidade) || body.quantidade < 1) {
+        return Response.json({ error: "Quantidade inválida." }, { status: 400 });
+      }
+      quantidade = body.quantidade;
     }
   } catch {
     return Response.json({ error: "Pedido inválido." }, { status: 400 });
@@ -132,7 +152,7 @@ export async function POST(request: Request) {
   }
 
   // Duas portas: a peça tem de estar à venda online e ainda disponível. A
-  // segunda fecha-se sozinha quando a peça é vendida, pelo webhook.
+  // segunda fecha-se sozinha quando a última unidade é vendida, pelo webhook.
   if (!produto.venderOnline || !produto.available) {
     return Response.json(
       { error: "Esta peça já não está disponível para compra online." },
@@ -145,53 +165,71 @@ export async function POST(request: Request) {
     return Response.json({ error: "Peça sem preço definido." }, { status: 409 });
   }
 
-  const tamanhos = produto.tamanhos ?? [];
-  let tamanhoEscolhido: Tamanho | null = null;
+  const variantes = mapVariantes(produto.variantes);
+  let escolhida: Variante | null = null;
 
-  if (temTamanhos(tamanhos)) {
-    if (stockTotal(tamanhos) <= 0) {
+  if (temVariantes(variantes)) {
+    if (stockTotal(variantes) <= 0) {
+      return Response.json({ error: "Esta peça está esgotada." }, { status: 409 });
+    }
+
+    if (!variantePedida) {
       return Response.json(
-        { error: "Esta peça está esgotada em todos os tamanhos." },
+        { error: "Escolha a cor e o tamanho antes de comprar." },
+        { status: 400 }
+      );
+    }
+
+    const encontrada = variantes.find((variante) => variante.key === variantePedida);
+
+    // A lista pode ter mudado no Studio desde que a página foi carregada: a
+    // combinação pode já não existir, ou já não ter unidades que cheguem.
+    if (!encontrada) {
+      return Response.json(
+        { error: "Essa opção já não existe nesta peça. Recarregue a página." },
         { status: 409 }
       );
     }
 
-    if (!tamanhoPedido) {
-      return Response.json({ error: "Escolha o tamanho antes de comprar." }, { status: 400 });
-    }
+    const nome = descreverVariante(encontrada);
 
-    const encontrado = tamanhos.find((tamanho) => tamanho.key === tamanhoPedido);
-
-    // A lista pode ter mudado no Studio desde que a página foi carregada: o
-    // tamanho pode já não existir, ou já não ter unidades.
-    if (!encontrado) {
+    if (encontrada.stock <= 0) {
       return Response.json(
-        { error: "Esse tamanho já não existe nesta peça. Recarregue a página." },
+        { error: nome ? `${nome} está esgotado.` : "Esta peça está esgotada." },
         { status: 409 }
       );
     }
 
-    if (encontrado.stock <= 0) {
+    const maximo = maximoPorCompra(encontrada.stock);
+    if (quantidade > maximo) {
       return Response.json(
-        { error: `O tamanho ${encontrado.label} está esgotado.` },
+        {
+          error:
+            maximo === 1
+              ? "Só resta 1 unidade desta opção."
+              : `Só pode comprar até ${maximo} unidades desta opção.`,
+        },
         { status: 409 }
       );
     }
 
-    tamanhoEscolhido = encontrado;
+    escolhida = encontrada;
+  } else if (quantidade !== 1) {
+    // Peça única: não há segunda unidade para vender.
+    return Response.json({ error: "Esta peça é única." }, { status: 409 });
   }
 
+  const descricao = descreverVariante(escolhida);
+
   const stripe = new Stripe(secretKey);
-  const nomeNoStripe = tamanhoEscolhido
-    ? `${produto.title} — Tamanho ${tamanhoEscolhido.label}`
-    : produto.title;
+  const nomeNoStripe = descricao ? `${produto.title} — ${descricao}` : produto.title;
 
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: [
         {
-          quantity: 1,
+          quantity: quantidade,
           price_data: {
             currency: "eur",
             unit_amount: eurosParaCentimos(produto.price),
@@ -209,7 +247,7 @@ export async function POST(request: Request) {
           "BG", "GR", "EE", "LV", "LT", "CY", "MT",
         ],
       },
-      shipping_options: opcoesDeEnvio(produto.price),
+      shipping_options: opcoesDeEnvio(produto.price * quantidade),
       phone_number_collection: { enabled: true },
       custom_fields: [
         {
@@ -219,13 +257,21 @@ export async function POST(request: Request) {
           optional: true,
         },
       ],
-      // O webhook usa isto para descer o stock do tamanho certo — ou, se a
-      // peça for única, para a retirar do site.
+      // O webhook usa isto para descer o stock da variante certa — ou, se a
+      // peça for única, para a retirar do site. A página de vendas lê o
+      // mesmo para a Paula saber o que passar na fatura.
       metadata: {
         productId: produto._id,
         handle,
-        ...(tamanhoEscolhido
-          ? { tamanhoKey: tamanhoEscolhido.key, tamanho: tamanhoEscolhido.label }
+        produto: produto.title,
+        quantidade: String(quantidade),
+        ...(escolhida
+          ? {
+              varianteKey: escolhida.key,
+              variante: descricao,
+              cor: escolhida.cor ?? "",
+              tamanho: escolhida.tamanho ?? "",
+            }
           : {}),
       },
       locale: "pt",

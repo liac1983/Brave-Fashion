@@ -38,7 +38,7 @@ export const vendaProcessada = defineType({
     }),
     defineField({
       name: 'tamanho',
-      title: 'Tamanho',
+      title: 'Cor / tamanho e quantidade',
       type: 'string',
     }),
   ],

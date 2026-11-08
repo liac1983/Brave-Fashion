@@ -8,6 +8,7 @@ import MainNav from "./main-nav";
 import FavoritesButton from "./favorites-button";
 import { Menu } from "lucide-react";
 import { useUser, UserButton, SignInButton } from "@clerk/nextjs";
+import { useTomDoHero } from "@/lib/hero-tom";
 
 const mobileLinks = [
   { href: "/", label: "Início" },
@@ -32,15 +33,20 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const tomDoHero = useTomDoHero();
+
   // Transparente só na homepage e enquanto o menu mobile está fechado
-  const transparent = isHome && !scrolled && !isOpen;
+  const overHero = isHome && !scrolled && !isOpen;
+  // Letras brancas só por cima de fotografia. No slide do logótipo, de fundo
+  // claro, o menu continua transparente mas com as letras escuras de sempre.
+  const transparent = overHero && tomDoHero === "escuro";
 
   return (
     <header
       className={`top-0 z-50 transition-colors duration-300 ${
         isHome ? "fixed inset-x-0" : "sticky"
       } ${
-        transparent
+        overHero
           ? "border-b border-transparent bg-transparent"
           : "border-b border-[#e9dfd3] bg-[#f7f2ec]/95 backdrop-blur"
       }`}

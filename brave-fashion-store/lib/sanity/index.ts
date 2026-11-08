@@ -5,31 +5,29 @@ import {
   PRODUCTS_QUERY,
   PRODUCT_BY_HANDLE_QUERY,
   NEW_PRODUCTS_QUERY,
+  PROMOTIONS_QUERY,
   HOMEPAGE_QUERY,
   LEGAL_PAGE_QUERY,
 } from './queries'
-import type { Product, Collection, Homepage, LegalPage } from './types'
-import type { Tamanho } from '@/lib/shop'
+import type { Product, Collection, Homepage, HeroSlide, LegalPage, SanityImage } from './types'
+import type { Variante } from '@/lib/shop'
 
-/** Linha do campo "Tamanhos e quantidades" como vem do Sanity. */
-type RawTamanho = { key?: string; label?: string; stock?: number }
+/** Linha do campo "Cores, tamanhos e quantidades" como vem do Sanity. */
+type RawVariante = { key?: string; cor?: string | null; tamanho?: string | null; stock?: number }
 
 /**
- * Linhas sem tamanho ou sem chave são descartadas: aconteceria se a Paula
- * acrescentasse uma linha no Studio e saísse antes de a preencher, e um
- * tamanho sem nome não é escolha nenhuma para quem está a comprar.
+ * Linhas sem chave são descartadas, e a cor é limpa de espaços: escrito à mão,
+ * "Azul " e "Azul" seriam duas cores para a cliente escolher.
  */
-function mapTamanhos(raw: unknown): Tamanho[] {
+export function mapVariantes(raw: unknown): Variante[] {
   if (!Array.isArray(raw)) return []
 
-  return (raw as RawTamanho[])
-    .filter(
-      (linha): linha is RawTamanho & { key: string; label: string } =>
-        Boolean(linha?.key && linha?.label),
-    )
+  return (raw as RawVariante[])
+    .filter((linha): linha is RawVariante & { key: string } => Boolean(linha?.key))
     .map((linha) => ({
       key: linha.key,
-      label: linha.label,
+      cor: linha.cor?.trim() || null,
+      tamanho: linha.tamanho?.trim() || null,
       stock: typeof linha.stock === 'number' ? linha.stock : 0,
     }))
 }
@@ -49,7 +47,7 @@ function mapProduct(raw: any): Product {
     available: raw.available ?? true,
     originalPrice: raw.originalPrice ?? null,
     venderOnline: raw.venderOnline ?? false,
-    tamanhos: mapTamanhos(raw.tamanhos),
+    variantes: mapVariantes(raw.variantes),
     featuredImage: raw.featuredImage ?? null,
     images: { edges: allImages },
     priceRange: {
@@ -108,12 +106,70 @@ export async function getNewProducts(): Promise<Product[]> {
   return (raw ?? []).map(mapProduct)
 }
 
+/** Todas as peças em promoção, sem o limite da listagem geral. */
+export async function getPromotions(): Promise<Product[]> {
+  const raw = await client.fetch(PROMOTIONS_QUERY)
+  return (raw ?? []).map(mapProduct)
+}
+
+type RawSlide = {
+  key?: string
+  tipo?: string
+  fundo?: string
+  titulo?: string | null
+  subtitulo?: string | null
+  mostrarBotao?: boolean | null
+  imagem?: SanityImage | null
+  logo?: SanityImage | null
+}
+
+function mapSlide(raw: RawSlide | null): HeroSlide | null {
+  if (!raw?.key) return null
+
+  if (raw.tipo === 'logo') {
+    return {
+      key: raw.key,
+      tipo: 'logo',
+      fundo: raw.fundo === 'branco' ? 'branco' : 'bege',
+      logo: raw.logo?.url ? raw.logo : null,
+    }
+  }
+
+  // Um slide de fotografia sem fotografia (acabado de criar no Studio) não
+  // se mostra: seria um ecrã vazio a rodar.
+  if (!raw.imagem?.url) return null
+
+  return {
+    key: raw.key,
+    tipo: 'imagem',
+    imagem: raw.imagem ?? null,
+    titulo: raw.titulo ?? null,
+    subtitulo: raw.subtitulo ?? null,
+    mostrarBotao: raw.mostrarBotao ?? true,
+  }
+}
+
 export async function getHomepage(): Promise<Homepage> {
   const raw = await client.fetch(HOMEPAGE_QUERY)
+  const slides = ((raw?.slides ?? []) as (RawSlide | null)[])
+    .map(mapSlide)
+    .filter((slide): slide is HeroSlide => slide !== null)
+
+  if (slides.length > 0) return { slides }
+
+  // Carrossel ainda por preencher: o logótipo e o hero de antes.
   return {
-    heroImage: raw?.heroImage ?? null,
-    heroTitle: raw?.heroTitle ?? null,
-    heroSubtitle: raw?.heroSubtitle ?? null,
+    slides: [
+      { key: 'logo', tipo: 'logo', fundo: 'bege', logo: null },
+      {
+        key: 'hero',
+        tipo: 'imagem',
+        imagem: raw?.heroImage ?? null,
+        titulo: raw?.heroTitle ?? 'Nova Coleção',
+        subtitulo: raw?.heroSubtitle ?? 'O estilo é criar a própria moda — a diferença está nos pormenores.',
+        mostrarBotao: true,
+      },
+    ],
   }
 }
 

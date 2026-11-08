@@ -38,11 +38,7 @@ export default async function HomePage() {
   return (
     <>
 
-      <HeroSection
-        heroImage={homepage.heroImage}
-        heroTitle={homepage.heroTitle}
-        heroSubtitle={homepage.heroSubtitle}
-      />
+      <HeroSection slides={homepage.slides} />
 
       <div className="bg-[#f7f2ec]">
         <div className="mx-auto max-w-7xl space-y-24 px-4 pb-24 pt-20">

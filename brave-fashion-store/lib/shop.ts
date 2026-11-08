@@ -24,40 +24,86 @@ export const SHIPPING = {
 } as const;
 
 /**
- * Um tamanho de uma peça e quantas unidades existem dele.
+ * Uma combinação de cor e tamanho de uma peça, e quantas unidades há dela.
  *
- * `key` é a chave que o Sanity dá a cada linha do campo "Tamanhos e
- * quantidades". É por ela que o site identifica o tamanho de uma ponta à
- * outra — do botão de comprar até ao desconto do stock — porque o nome pode
- * ser corrigido no Studio a qualquer momento e a chave não muda.
+ * Cada linha do campo "Cores, tamanhos e quantidades" no Studio é uma
+ * variante: "Azul · M · 3 unidades". A cor e o tamanho são ambos opcionais —
+ * uma écharpe pode ter só cores, umas calças só tamanhos, e uma peça com
+ * várias unidades iguais só a quantidade.
+ *
+ * `key` é a chave que o Sanity dá à linha. É por ela que o site identifica a
+ * variante de uma ponta à outra — do botão de comprar até ao desconto do
+ * stock — porque a cor e o tamanho podem ser corrigidos no Studio a qualquer
+ * momento e a chave não muda.
  */
-export type Tamanho = {
+export type Variante = {
   key: string;
-  label: string;
+  cor: string | null;
+  tamanho: string | null;
   stock: number;
 };
 
-/** Só os tamanhos que a cliente pode escolher. */
-export function tamanhosComStock(tamanhos: Tamanho[] | undefined | null) {
-  return (tamanhos ?? []).filter((tamanho) => tamanho.stock > 0);
+/** Nunca se vendem mais do que estas unidades numa só compra. */
+export const MAX_POR_COMPRA = 10;
+
+/** "Azul · M", "Azul", "M" — ou vazio, numa linha que só tem quantidade. */
+export function descreverVariante(variante: Pick<Variante, "cor" | "tamanho"> | null | undefined) {
+  if (!variante) return "";
+  return [variante.cor, variante.tamanho].filter(Boolean).join(" · ");
+}
+
+/** Só as variantes que a cliente pode escolher. */
+export function variantesComStock(variantes: Variante[] | undefined | null) {
+  return (variantes ?? []).filter((variante) => variante.stock > 0);
 }
 
 /**
- * Uma peça "tem tamanhos" quando a Paula preencheu a lista no Studio.
+ * Uma peça "tem variantes" quando a Paula preencheu a lista no Studio.
  *
- * Lista vazia é o caso normal da loja: peça de unidade única, sem tamanho a
+ * Lista vazia é o caso normal da loja: peça de unidade única, sem nada a
  * escolher. Toda a lógica de stock olha primeiro para isto.
  */
-export function temTamanhos(tamanhos: Tamanho[] | undefined | null) {
-  return (tamanhos ?? []).length > 0;
+export function temVariantes(variantes: Variante[] | undefined | null) {
+  return (variantes ?? []).length > 0;
 }
 
-/** Unidades ainda por vender, somando todos os tamanhos. */
-export function stockTotal(tamanhos: Tamanho[] | undefined | null) {
-  return (tamanhos ?? []).reduce(
-    (total, tamanho) => total + Math.max(0, tamanho.stock),
+/** Unidades ainda por vender, somando todas as variantes. */
+export function stockTotal(variantes: Variante[] | undefined | null) {
+  return (variantes ?? []).reduce(
+    (total, variante) => total + Math.max(0, variante.stock),
     0
   );
+}
+
+/** Valores distintos de um campo, pela ordem em que aparecem no Studio. */
+function distintos(variantes: Variante[], campo: "cor" | "tamanho") {
+  const vistos: string[] = [];
+  for (const variante of variantes) {
+    const valor = variante[campo];
+    if (valor && !vistos.includes(valor)) vistos.push(valor);
+  }
+  return vistos;
+}
+
+/** Cores com pelo menos uma unidade. */
+export function coresDisponiveis(variantes: Variante[] | undefined | null) {
+  return distintos(variantesComStock(variantes), "cor");
+}
+
+/** Tamanhos com pelo menos uma unidade (na cor indicada, se houver). */
+export function tamanhosDisponiveis(
+  variantes: Variante[] | undefined | null,
+  cor?: string | null
+) {
+  const comStock = variantesComStock(variantes).filter(
+    (variante) => !cor || variante.cor === cor
+  );
+  return distintos(comStock, "tamanho");
+}
+
+/** Quantas unidades a cliente pode pôr numa compra desta variante. */
+export function maximoPorCompra(stock: number) {
+  return Math.max(0, Math.min(stock, MAX_POR_COMPRA));
 }
 
 export function formatEur(amount: number) {

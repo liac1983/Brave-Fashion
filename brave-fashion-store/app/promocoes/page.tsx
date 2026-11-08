@@ -1,6 +1,6 @@
 import Link from "next/link";
 import ProductCard from "@/components/product/product-card";
-import { getProducts } from "@/lib/sanity";
+import { getPromotions } from "@/lib/sanity";
 
 export const metadata = {
   title: "Promoções",
@@ -15,11 +15,7 @@ function getDiscountPercentage(price: number, originalPrice: number) {
 }
 
 export default async function PromocoesPage() {
-  const products = await getProducts(24);
-
-  const discountedProducts = products.filter(
-    (p) => p.originalPrice != null && p.originalPrice > Number(p.priceRange.minVariantPrice.amount)
-  );
+  const discountedProducts = await getPromotions();
 
   return (
     <section className="bg-[#f7f2ec] py-12 md:py-16">

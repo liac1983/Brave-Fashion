@@ -1,4 +1,4 @@
-import type { Tamanho } from "@/lib/shop";
+import type { Variante } from "@/lib/shop";
 
 export type SanityImage = {
   url: string;
@@ -22,10 +22,10 @@ export type Product = {
   originalPrice: number | null;
   venderOnline: boolean;
   /**
-   * Tamanhos com a quantidade de cada. Vazio quando a peça é de unidade
-   * única, que é o caso da maioria das peças da loja.
+   * Combinações de cor e tamanho com a quantidade de cada. Vazio quando a
+   * peça é de unidade única, que é o caso da maioria das peças da loja.
    */
-  tamanhos: Tamanho[];
+  variantes: Variante[];
   featuredImage: SanityImage | null;
   images: {
     edges: Array<{ node: SanityImage }>;
@@ -52,10 +52,26 @@ export type Collection = {
   };
 };
 
+/** Um slide do carrossel do topo da homepage. */
+export type HeroSlide =
+  | {
+      key: string;
+      tipo: "logo";
+      fundo: "bege" | "branco";
+      /** Vazio quando se usa o logótipo da loja. */
+      logo: SanityImage | null;
+    }
+  | {
+      key: string;
+      tipo: "imagem";
+      imagem: SanityImage | null;
+      titulo: string | null;
+      subtitulo: string | null;
+      mostrarBotao: boolean;
+    };
+
 export type Homepage = {
-  heroImage: SanityImage | null;
-  heroTitle: string | null;
-  heroSubtitle: string | null;
+  slides: HeroSlide[];
 };
 
 export type LegalPage = {
