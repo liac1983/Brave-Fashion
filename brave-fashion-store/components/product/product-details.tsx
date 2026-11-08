@@ -165,22 +165,22 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         )}
         <AddToListButton productId={product.id} />
 
-        <div className="mt-10 border-b border-[#e7d9cf] pb-10">
-          <p className="max-w-2xl whitespace-pre-line text-[18px] leading-9 text-neutral-600 md:text-[19px]">
-            {product.description || "Descrição em atualização."}
-          </p>
-        </div>
-
-        <div className="mt-8 border-t border-[#e7d9cf]">
-          <details className="group border-b border-[#e7d9cf]">
+        <div className="mt-10 border-t border-[#e7d9cf]">
+          {/*
+            A descrição que a Paula escreve no Studio (composição, tamanhos,
+            notas da peça) vive aqui, aberta à partida. O texto genérico só
+            aparece quando a peça ainda não tem descrição.
+          */}
+          <details open className="group border-b border-[#e7d9cf]">
             <summary className="flex cursor-pointer list-none items-center justify-between py-6 text-[20px] font-medium text-neutral-900 md:text-[21px]">
               <span>Detalhes do produto</span>
               <span className="text-xl transition group-open:rotate-90">›</span>
             </summary>
-            <div className="pb-6 pr-4 text-[17px] leading-8 text-neutral-600">
-              Peça selecionada com atenção ao corte, ao caimento e ao conforto.
-              Ideal para criar um look elegante e feminino, tanto para ocasiões
-              especiais como para um uso mais sofisticado no dia a dia.
+            <div className="whitespace-pre-line pb-6 pr-4 text-[17px] leading-8 text-neutral-600">
+              {product.description?.trim() ||
+                "Peça selecionada com atenção ao corte, ao caimento e ao conforto. " +
+                  "Ideal para criar um look elegante e feminino, tanto para ocasiões " +
+                  "especiais como para um uso mais sofisticado no dia a dia."}
             </div>
           </details>
 
