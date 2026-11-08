@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { FavoritesProvider } from "@/components/favorites/favorites-provider";
 import SiteShell from "@/components/layout/site-shell";
 import { Analytics } from "@vercel/analytics/next";
+import FichaDaLoja from "@/components/seo/ficha-da-loja";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -61,6 +62,11 @@ export const metadata: Metadata = {
       "Moda elegante e sofisticada para mulheres que apreciam qualidade e estilo.",
     images: ["/logo.jpg"],
   },
+  // Código do Google Search Console, se a verificação for feita pela etiqueta
+  // HTML. Pela Cloudflare (registo DNS) não é preciso nada aqui.
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 export default function RootLayout({
@@ -72,6 +78,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="pt" className={`${inter.variable} ${cormorant.variable}`}>
         <body className="min-h-screen bg-white font-sans text-black">
+          <FichaDaLoja />
           <FavoritesProvider>
             <SiteShell>{children}</SiteShell>
             {/*
