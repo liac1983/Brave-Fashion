@@ -2,6 +2,12 @@ import Link from "next/link";
 import ProductCard from "@/components/product/product-card";
 import { getPromotions } from "@/lib/sanity";
 
+/**
+ * O conteúdo vem do Sanity: refresca-se no máximo a cada minuto, para o que
+ * a Paula muda no Studio aparecer sem ser preciso publicar o site outra vez.
+ */
+export const revalidate = 60;
+
 export const metadata = {
   title: "Promoções",
   description:

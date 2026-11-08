@@ -6,6 +6,12 @@ import HeroSection from "@/components/home/hero-section";
 import FadeIn from "@/components/ui/fade-in";
 import { cropped, croppedCard } from "@/lib/sanity/image";
 
+/**
+ * O conteúdo vem do Sanity: refresca-se no máximo a cada minuto, para o que
+ * a Paula muda no Studio aparecer sem ser preciso publicar o site outra vez.
+ */
+export const revalidate = 60;
+
 export default async function HomePage() {
   const [products, collections, homepage] = await Promise.all([
     getProducts(4),
