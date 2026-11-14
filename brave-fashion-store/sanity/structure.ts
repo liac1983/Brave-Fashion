@@ -77,7 +77,7 @@ export const structure: StructureResolver = (S) =>
         .child(
           S.documentList()
             .title('Coleções por preencher')
-            .filter('_type == "collection" && count(products) == 0')
+            .filter('_type == "collection" && count(products[defined(@->_id)]) == 0')
             .defaultOrdering([{ field: 'title', direction: 'asc' }])
         ),
 

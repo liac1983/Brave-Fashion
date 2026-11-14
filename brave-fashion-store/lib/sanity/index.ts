@@ -96,7 +96,12 @@ export async function getCollectionByHandle(
     description: col.description ?? '',
     image: col.image ?? null,
     products: {
-      edges: (col.products ?? []).map((p: any) => ({ node: mapProduct(p) })),
+      // As referências que não resolvem chegam aqui como null — acontece
+      // sempre que uma peça é apagada depois de ter entrado numa coleção, e
+      // sem este filtro a página da coleção rebentava em vez de a ignorar.
+      edges: (col.products ?? [])
+        .filter(Boolean)
+        .map((p: any) => ({ node: mapProduct(p) })),
     },
   }
 }
