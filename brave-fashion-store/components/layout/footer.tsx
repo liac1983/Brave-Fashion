@@ -48,6 +48,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/colecoes" className="transition hover:text-neutral-900">
+                  Coleções
+                </Link>
+              </li>
+              <li>
                 <Link href="/novidades" className="transition hover:text-neutral-900">
                   Novidades
                 </Link>

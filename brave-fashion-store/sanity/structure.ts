@@ -69,6 +69,18 @@ export const structure: StructureResolver = (S) =>
         .title('Coleções')
         .child(S.documentTypeList('collection').title('Coleções')),
 
+      // Uma coleção sem peças não aparece na loja, de propósito — não vale a
+      // pena mandar a cliente para uma página vazia. Mas também não pode
+      // desaparecer das vistas da Paula: é aqui que ela as encontra.
+      S.listItem()
+        .title('Coleções por preencher')
+        .child(
+          S.documentList()
+            .title('Coleções por preencher')
+            .filter('_type == "collection" && count(products) == 0')
+            .defaultOrdering([{ field: 'title', direction: 'asc' }])
+        ),
+
       S.listItem()
         .title('Página inicial')
         .child(S.documentTypeList('homepage').title('Página inicial')),

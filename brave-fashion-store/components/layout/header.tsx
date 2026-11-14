@@ -14,6 +14,7 @@ const mobileLinks = [
   { href: "/", label: "Início" },
   { href: "/sobre-nos", label: "Sobre Nós" },
   { href: "/produtos", label: "Produtos" },
+  { href: "/colecoes", label: "Coleções" },
   { href: "/novidades", label: "Novidades" },
   { href: "/promocoes", label: "Promoções" },
   { href: "/marcacoes", label: "Marcar Visita" },

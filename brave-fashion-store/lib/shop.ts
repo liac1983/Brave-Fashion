@@ -24,6 +24,15 @@ export const SHIPPING = {
 } as const;
 
 /**
+ * Quantas peças a página Novidades mostra.
+ *
+ * As novidades são agora as últimas peças acrescentadas, e não um interruptor
+ * que alguém tem de se lembrar de desligar — estavam 22 das 23 peças marcadas
+ * como novidade, o que fazia da página uma cópia da loja inteira.
+ */
+export const NOVIDADES_A_MOSTRAR = 12;
+
+/**
  * Uma combinação de cor e tamanho de uma peça, e quantas unidades há dela.
  *
  * Cada linha do campo "Cores, tamanhos e quantidades" no Studio é uma

@@ -1,4 +1,5 @@
 import { defineArrayMember, defineField, defineType } from 'sanity'
+import { CATEGORIAS } from '@/lib/categorias'
 
 /**
  * Tamanhos oferecidos na lista.
@@ -44,6 +45,17 @@ export const product = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'category',
+      title: 'Categoria',
+      type: 'string',
+      options: { list: [...CATEGORIAS] },
+      description:
+        'Serve para a cliente filtrar a loja — é só para isso. Não é por aqui que a peça vai ' +
+        'às Promoções (isso é o Preço Original, já a seguir) nem a uma Coleção (isso faz-se no ' +
+        'menu Coleções, aqui ao lado).',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: 'price',
       title: 'Preço (€)',
       type: 'number',
@@ -55,6 +67,22 @@ export const product = defineType({
       type: 'number',
       description:
         'O preço antigo, mais alto. Preenche isto e baixa o Preço acima — o site calcula a percentagem, risca o valor antigo e põe a peça nas Promoções. Para acabar a promoção, apaga este campo.',
+      validation: (Rule) =>
+        Rule.custom((originalPrice, context) => {
+          if (originalPrice === undefined || originalPrice === null) return true
+
+          const preco = (context.document as { price?: number } | undefined)?.price
+
+          if (typeof preco !== 'number') return true
+
+          // Sem esta regra a peça ficava com o campo preenchido e na mesma fora
+          // das Promoções — e nada no Studio explicava o silêncio.
+          if (originalPrice <= preco) {
+            return 'O Preço Original tem de ser MAIOR que o Preço — senão não há desconto nenhum para mostrar, e a peça não entra nas Promoções.'
+          }
+
+          return true
+        }),
     }),
     defineField({
       name: 'venderOnline',
@@ -167,17 +195,6 @@ export const product = defineType({
       of: [{ type: 'image', options: { hotspot: true } }],
     }),
     defineField({
-      name: 'category',
-      title: 'Categoria',
-      type: 'string',
-    }),
-    defineField({
-      name: 'isNew',
-      title: 'Novidade',
-      type: 'boolean',
-      initialValue: false,
-    }),
-    defineField({
       name: 'available',
       title: 'Disponível',
       type: 'boolean',
@@ -189,9 +206,10 @@ export const product = defineType({
       title: 'title',
       media: 'images.0',
       price: 'price',
+      categoria: 'category',
       variantes: 'variantes',
     },
-    prepare({ title, media, price, variantes }) {
+    prepare({ title, media, price, categoria, variantes }) {
       const linhas: { stock?: number }[] = Array.isArray(variantes) ? variantes : []
 
       const unidades = linhas.reduce((total, linha) => total + Math.max(0, linha.stock ?? 0), 0)
@@ -205,7 +223,8 @@ export const product = defineType({
 
       return {
         title,
-        subtitle: `${price ? `€${price}` : ''}${resumo}`,
+        subtitle:
+          [categoria, price ? `€${price}` : ''].filter(Boolean).join('  ·  ') + resumo,
         media,
       }
     },

@@ -17,7 +17,6 @@ const productFields = groq`
   description,
   price,
   category,
-  isNew,
   available,
   originalPrice,
   venderOnline,
@@ -47,8 +46,14 @@ export const PRODUCT_BY_HANDLE_QUERY = groq`
   }
 `
 
+/**
+ * Só as coleções que já têm peças.
+ *
+ * Uma coleção vazia aparecia na homepage com foto e tudo e levava a uma página
+ * sem nada — o único beco sem saída do site.
+ */
 export const COLLECTIONS_QUERY = groq`
-  *[_type == "collection"] | order(_createdAt desc) [0...$limit] {
+  *[_type == "collection" && count(products) > 0] | order(_createdAt desc) [0...$limit] {
     "_id": _id,
     title,
     "handle": slug.current,
@@ -86,8 +91,9 @@ export const PROMOTIONS_QUERY = groq`
   }
 `
 
+/** As últimas peças a entrar no Studio — ver NOVIDADES_A_MOSTRAR. */
 export const NEW_PRODUCTS_QUERY = groq`
-  *[_type == "product" && available == true && isNew == true] | order(_createdAt desc) {
+  *[_type == "product" && available == true] | order(_createdAt desc) [0...$limit] {
     ${productFields}
   }
 `

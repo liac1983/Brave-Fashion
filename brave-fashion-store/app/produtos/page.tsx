@@ -2,9 +2,10 @@ import Link from "next/link";
 import { getProducts } from "@/lib/sanity";
 import ProductCard from "@/components/product/product-card";
 import ProductsSortSelect from "@/components/product/products-sort-select";
+import { ordenarCategorias } from "@/lib/categorias";
 
 export const metadata = {
-  title: "A Nossa Coleção",
+  title: "Todas as Peças",
   description:
     "Vestidos, casacos, malhas e gabardinas selecionados pela Paula Valente. Loja em Paços de Ferreira, com compra online e entrega em todo o país.",
 };
@@ -24,9 +25,13 @@ export default async function ProdutosPage({ searchParams }: ProdutosPageProps) 
 
   const allProducts = await getProducts(100);
 
-  const uniqueCategories = Array.from(
-    new Set(allProducts.map((p) => p.category).filter(Boolean))
-  ) as string[];
+  // Só as categorias que têm peças, e pela ordem escolhida em lib/categorias.ts
+  // — não pela ordem acidental em que as peças foram acrescentadas ao Studio.
+  const uniqueCategories = ordenarCategorias(
+    Array.from(
+      new Set(allProducts.map((p) => p.category).filter(Boolean) as string[])
+    )
+  );
 
   const filtered =
     categoria === "todos"
@@ -56,8 +61,12 @@ export default async function ProdutosPage({ searchParams }: ProdutosPageProps) 
   }
 
   const categories = [
-    { label: "Todos", value: "todos" },
-    ...uniqueCategories.map((cat) => ({ label: cat, value: cat })),
+    { label: "Todos", value: "todos", total: allProducts.length },
+    ...uniqueCategories.map((cat) => ({
+      label: cat,
+      value: cat,
+      total: allProducts.filter((p) => p.category === cat).length,
+    })),
   ];
 
   return (
@@ -65,7 +74,7 @@ export default async function ProdutosPage({ searchParams }: ProdutosPageProps) 
       <div className="mx-auto max-w-7xl px-4">
         <div className="mb-14">
           <h1 className="font-serif text-5xl leading-tight text-neutral-900 md:text-7xl">
-            A Nossa Coleção
+            Todas as Peças
           </h1>
           <p className="mt-4 text-2xl text-neutral-500">
             {sortedProducts.length} produtos disponíveis
@@ -89,13 +98,18 @@ export default async function ProdutosPage({ searchParams }: ProdutosPageProps) 
                       <Link
                         key={item.value}
                         href={`/produtos?categoria=${item.value}&ordenar=${ordenar}`}
-                        className={`block rounded-[6px] px-4 py-3 text-[17px] transition ${
+                        className={`flex items-center justify-between gap-3 rounded-[6px] px-4 py-3 text-[17px] transition ${
                           active
                             ? "bg-[#B76E2B] font-medium text-white"
                             : "text-neutral-700 hover:bg-[#efe4d8] hover:text-neutral-900"
                         }`}
                       >
-                        {item.label}
+                        <span>{item.label}</span>
+                        <span
+                          className={active ? "text-white/75" : "text-neutral-400"}
+                        >
+                          {item.total}
+                        </span>
                       </Link>
                     );
                   })}

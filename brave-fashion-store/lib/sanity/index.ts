@@ -11,6 +11,7 @@ import {
 } from './queries'
 import type { Product, Collection, Homepage, HeroSlide, LegalPage, SanityImage } from './types'
 import type { Variante } from '@/lib/shop'
+import { NOVIDADES_A_MOSTRAR } from '@/lib/shop'
 
 /** Linha do campo "Cores, tamanhos e quantidades" como vem do Sanity. */
 type RawVariante = { key?: string; cor?: string | null; tamanho?: string | null; stock?: number }
@@ -43,7 +44,6 @@ function mapProduct(raw: any): Product {
     title: raw.title,
     description: raw.description ?? '',
     category: raw.category ?? null,
-    isNew: raw.isNew ?? false,
     available: raw.available ?? true,
     originalPrice: raw.originalPrice ?? null,
     venderOnline: raw.venderOnline ?? false,
@@ -101,8 +101,10 @@ export async function getCollectionByHandle(
   }
 }
 
-export async function getNewProducts(): Promise<Product[]> {
-  const raw = await client.fetch(NEW_PRODUCTS_QUERY)
+export async function getNewProducts(
+  first = NOVIDADES_A_MOSTRAR,
+): Promise<Product[]> {
+  const raw = await client.fetch(NEW_PRODUCTS_QUERY, { limit: first })
   return (raw ?? []).map(mapProduct)
 }
 

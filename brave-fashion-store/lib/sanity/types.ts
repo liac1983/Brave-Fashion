@@ -17,7 +17,6 @@ export type Product = {
   title: string;
   description: string;
   category: string | null;
-  isNew: boolean;
   available: boolean;
   originalPrice: number | null;
   venderOnline: boolean;
