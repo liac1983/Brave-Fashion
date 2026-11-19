@@ -17,6 +17,9 @@ const staticRoutes = [
   "/arranjos",
 ];
 
+// Regenera de hora a hora: os produtos novos do Sanity entram sem esperar por um deploy.
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
