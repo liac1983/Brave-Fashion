@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Cormorant_Garamond } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { FavoritesProvider } from "@/components/favorites/favorites-provider";
@@ -7,15 +7,18 @@ import SiteShell from "@/components/layout/site-shell";
 import { Analytics } from "@vercel/analytics/next";
 import FichaDaLoja from "@/components/seo/ficha-da-loja";
 
-const inter = Inter({
-  subsets: ["latin"],
+// Letras guardadas no projeto: o build não depende do Google Fonts
+// (falhou a descarregá-las a 8/11 e a 19/11).
+const inter = localFont({
+  src: "./fonts/inter-latin.woff2",
+  weight: "100 900",
   variable: "--font-inter",
   display: "swap",
 });
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+const cormorant = localFont({
+  src: "./fonts/cormorant-garamond-latin.woff2",
+  weight: "300 700",
   variable: "--font-cormorant",
   display: "swap",
 });
