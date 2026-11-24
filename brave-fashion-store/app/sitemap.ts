@@ -4,7 +4,7 @@ import { getProducts, getCollections } from "@/lib/sanity";
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://bravefashionbypaulavalente.com";
 
-// Páginas estáticas públicas
+// Páginas estáticas públicas. /contactos e /arranjos ficam de fora até terem conteúdo.
 const staticRoutes = [
   "",
   "/sobre-nos",
@@ -13,8 +13,6 @@ const staticRoutes = [
   "/promocoes",
   "/marcacoes",
   "/colecoes",
-  "/contactos",
-  "/arranjos",
 ];
 
 // Regenera de hora a hora: os produtos novos do Sanity entram sem esperar por um deploy.
