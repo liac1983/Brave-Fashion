@@ -1,7 +1,10 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getProductByHandle, getProducts } from "@/lib/sanity";
+import { metadataDaPagina } from "@/lib/seo";
 import ProductDetails from "@/components/product/product-details";
 import RelatedProducts from "@/components/product/related-products";
 
@@ -11,9 +14,29 @@ type ProductPageProps = {
   }>;
 };
 
+// Os metadados e a página pedem a mesma peça: um só pedido ao Sanity.
+const getProduct = cache(getProductByHandle);
+
+export async function generateMetadata({
+  params,
+}: ProductPageProps): Promise<Metadata> {
+  const { handle } = await params;
+  const product = await getProduct(handle);
+
+  if (!product) return {};
+
+  return metadataDaPagina({
+    title: product.title,
+    description: product.description,
+    descricaoAlternativa: `${product.title.trim()} na Brave Fashion by Paula Valente, moda feminina em Paços de Ferreira.`,
+    path: `/produtos/${product.handle}`,
+    image: product.featuredImage,
+  });
+}
+
 export default async function ProductPage({ params }: ProductPageProps) {
   const { handle } = await params;
-  const product = await getProductByHandle(handle);
+  const product = await getProduct(handle);
 
   if (!product) {
     notFound();

@@ -1,5 +1,8 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getCollectionByHandle } from "@/lib/sanity";
+import { metadataDaPagina } from "@/lib/seo";
 import ProductGrid from "@/components/product/product-grid";
 
 type CollectionPageProps = {
@@ -8,12 +11,32 @@ type CollectionPageProps = {
   }>;
 };
 
+// Os metadados e a página pedem a mesma coleção: um só pedido ao Sanity.
+const getCollection = cache(getCollectionByHandle);
+
+export async function generateMetadata({
+  params,
+}: CollectionPageProps): Promise<Metadata> {
+  const { handle } = await params;
+  const collection = await getCollection(handle);
+
+  if (!collection) return {};
+
+  return metadataDaPagina({
+    title: `Coleção ${collection.title}`,
+    description: collection.description,
+    descricaoAlternativa: `Coleção ${collection.title} da Brave Fashion by Paula Valente, moda feminina em Paços de Ferreira.`,
+    path: `/colecao/${collection.handle}`,
+    image: collection.image,
+  });
+}
+
 export default async function CollectionPage({
   params,
 }: CollectionPageProps) {
   const { handle } = await params;
 
-  const collection = await getCollectionByHandle(handle);
+  const collection = await getCollection(handle);
 
   if (!collection) {
     notFound();
