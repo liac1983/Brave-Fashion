@@ -29,7 +29,7 @@ const siteUrl =
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   // Relativo ao endereço de cada página, sem parâmetros (filtros, utm…).
-  // Herdado por todas; as peças e coleções definem o seu.
+  // Herdado por todas; a página inicial, as peças e as coleções definem o seu.
   alternates: { canonical: "./" },
   title: {
     default: "Brave Fashion by Paula Valente",

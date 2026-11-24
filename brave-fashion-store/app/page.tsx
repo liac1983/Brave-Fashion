@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { getCollections, getProducts, getHomepage } from "@/lib/sanity";
@@ -5,6 +6,11 @@ import NewsletterForm from "@/components/newsletter-form";
 import HeroSection from "@/components/home/hero-section";
 import FadeIn from "@/components/ui/fade-in";
 import { cropped, croppedCard } from "@/lib/sanity/image";
+
+// Explícito: no Vercel, o "./" do layout dá "/index" na página inicial.
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 /**
  * O conteúdo vem do Sanity: refresca-se no máximo a cada minuto, para o que
